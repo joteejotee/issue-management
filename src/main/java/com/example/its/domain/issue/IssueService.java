@@ -1,6 +1,5 @@
 package com.example.its.domain.issue;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,16 +11,33 @@ public class IssueService {
 
     private final IssueRepository issueRepository;
 
-    public List<IssueEntity> findAll() {
-        return issueRepository.findAll();
-    }
-
+    // 未完了の課題をリポジトリから全て取得して返す
     @Transactional
-    public void create(String summary, String description) {
-        issueRepository.insert(summary, description);
+    public List<IssueEntity> findAllIncompleteIssues() {
+        return issueRepository.findAllIncompleteIssues();
     }
 
-    public IssueEntity findById(long issueId) {
-        return issueRepository.findById(issueId);
+    // 完了した課題をリポジトリから全て取得して返す
+    @Transactional
+    public List<IssueEntity> findAllCompletedIssues() {
+        return issueRepository.findAllCompletedIssues();
+    }
+
+    // 指定されたIDの課題を完了状態に更新する
+    @Transactional
+    public void completeIssue(Long id) {
+        issueRepository.completeIssue(id);
+    }
+
+    // リポジトリから指定されたIDの課題を取得して返す(既存のメソッドをそのまま保持)
+    @Transactional
+    public IssueEntity findById(Long id) {
+        return issueRepository.findById(id);
+    }
+
+    // 新しい課題をDBに挿入する
+    @Transactional
+    public void insert(String summary, String description) {
+        issueRepository.insert(summary, description);
     }
 }
