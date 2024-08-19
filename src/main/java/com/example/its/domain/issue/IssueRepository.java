@@ -19,7 +19,7 @@ public interface IssueRepository {
     List<IssueEntity> findAllCompletedIssues();
 
     // 課題IDに基づいて、その課題の完了状態をtrueに更新するクエリ
-    @Update("UPDATE issues SET is_completed = true WHERE id = #{issueId}")
+    @Update("UPDATE issues SET is_completed = CASE WHEN is_completed = true THEN false ELSE true END WHERE id = #{issueId}")
     void completeIssue(long issueId);
 
     // 指定されたIDの課題をデータベースから取得するクエリ
