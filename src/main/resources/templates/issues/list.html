@@ -24,10 +24,14 @@
             <!-- 課題リストをループして表示 -->
             <tr th:each="issue : ${incompleteIssues}"> <!-- 未完了の課題リストをループ処理し、それぞれの課題を参照する -->
                 <td class="align-middle">
-                    <a th:href="@{/issues/{issueId}(issueId=${issue.id})}" th:text="${issue.summary}" class="d-block w-100 text-start"></a> <!-- 課題の概要をリンクとして表示し、詳細ページへのリンクを生成する -->
+                    <a th:href="@{/issues/{issueId}(issueId=${issue.id})}" th:text="${issue.summary}"
+                       class="d-block w-100 text-start"></a> <!-- 課題の概要をリンクとして表示し、詳細ページへのリンクを生成する -->
                 </td>
                 <td class="align-middle text-end pe-5">
-                    <button type="button" class="complete-button btn btn-primary" th:data-issue-id="${issue.id}">完了</button> <!-- 完了ボタン、課題IDをdata属性に設定 -->
+                    <button type="button" class="complete-button btn btn-primary" th:data-issue-id="${issue.id}">
+                        完了</button> <!-- 完了ボタン、課題IDをdata属性に設定 -->
+                    <button type="button" class="delete-button btn btn-danger ms-2" th:data-issue-id="${issue.id}">
+                        削除</button> <!-- 削除ボタン、課題IDをdata属性に設定 -->
                 </td>
             </tr>
             </tbody>
@@ -44,10 +48,13 @@
             <tbody class="table-group-divider">
             <tr th:each="issue : ${completedIssues}"> <!-- 完了した課題リストをループ処理し、それぞれの課題を参照する -->
                 <td class="align-middle">
-                    <a th:href="@{/issues/{issueId}(issueId=${issue.id})}" th:text="${issue.summary}" class="d-block w-100 text-start"></a> <!-- 課題の概要をリンクとして表示し、詳細ページへのリンクを生成する -->
+                    <a th:href="@{/issues/{issueId}(issueId=${issue.id})}" th:text="${issue.summary}"
+                       class="d-block w-100 text-start"></a> <!-- 課題の概要をリンクとして表示し、詳細ページへのリンクを生成する -->
                 </td>
                 <td class="align-middle text-end pe-5">
-                    <button type="button" class="complete-button btn btn-outline-primary" th:data-issue-id="${issue.id}">戻す</button> <!-- 戻すボタン、課題IDをdata属性に設定 -->
+                    <button type="button" class="complete-button btn btn-outline-primary"
+                            th:data-issue-id="${issue.id}">戻す
+                    </button> <!-- 戻すボタン、課題IDをdata属性に設定 -->
                 </td>
             </tr>
             </tbody>
@@ -55,6 +62,6 @@
     </div>
 </div>
 <!-- JavaScriptファイルの読み込み -->
-<script src="/js/completeIssue.js"></script> <!-- JSファイルを読み込む -->
+<script src="/js/completeIssue.js"></script>
 </body>
 </html>
