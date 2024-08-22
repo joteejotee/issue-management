@@ -29,4 +29,8 @@ public interface IssueRepository {
     // 新しい課題の概要と説明をDBに新規挿入するクエリ
     @Insert("INSERT INTO issues (summary, description) VALUES (#{summary}, #{description})")
     void insert(String summary, String description);
+
+    // 課題IDに基づいて、その課題を削除するクエリ
+    @Update("DELETE FROM issues WHERE id = #{issueId}")
+    void delete(long issueId);
 }

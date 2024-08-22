@@ -49,4 +49,11 @@ public class IssueController {
         issueService.insert(form.getSummary(), form.getDescription());
         return "redirect:/issues"; // 課題一覧にリダイレクトする
     }
+
+    // 指定されたIDの課題を削除する
+    @PostMapping("/delete")
+    public String deleteIssue(@RequestParam Long id) {
+        issueService.delete(id);
+        return "redirect:/issues"; // 課題一覧にリダイレクトする
+    }
 }

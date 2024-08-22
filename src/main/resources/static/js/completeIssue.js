@@ -30,4 +30,30 @@ document.addEventListener("DOMContentLoaded", function() {
             form.submit();
         });
     });
+
+    // 削除ボタンを取得する
+    const deleteButtons = document.querySelectorAll(".delete-button");
+
+    deleteButtons.forEach(function(button) {
+        // 削除ボタンのクリックを検知
+        button.addEventListener("click", function(event) {
+            event.preventDefault();
+
+            // 課題IDを取得する
+            const issueId = this.getAttribute("data-issue-id");
+
+            const form = document.createElement("form");
+            form.method = "post";
+            form.action = "/issues/delete";
+
+            form.setAttribute("style", "display:none;");
+            form.innerHTML = `
+                <input type="hidden" name="id" value="${issueId}">
+                <input type="hidden" name="_csrf" value="${csrfToken}">
+            `;
+
+            document.body.appendChild(form);
+            form.submit();
+        });
+    });
 });

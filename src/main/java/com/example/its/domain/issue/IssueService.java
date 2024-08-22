@@ -40,4 +40,10 @@ public class IssueService {
     public void insert(String summary, String description) {
         issueRepository.insert(summary, description);
     }
+
+    // 指定されたIDの課題を削除する
+    @Transactional
+    public void delete(Long id) {
+        issueRepository.delete(id);
+    }
 }
