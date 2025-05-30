@@ -116,17 +116,23 @@
                   <h2 class="text-xl font-bold text-gray-800">ステータス</h2>
                 </div>
                 <div class="flex items-center gap-2">
-                  <div th:if="${issue.completed}" class="badge badge-success gap-2 text-white font-semibold px-4 py-3">
+                  <div th:if="${issue.status.name() == 'TODO'}" class="badge badge-primary gap-2 text-white font-semibold px-4 py-3">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    課題
+                  </div>
+                  <div th:if="${issue.status.name() == 'DOING'}" class="badge badge-warning gap-2 text-white font-semibold px-4 py-3">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    作業中
+                  </div>
+                  <div th:if="${issue.status.name() == 'DONE'}" class="badge badge-success gap-2 text-white font-semibold px-4 py-3">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                     完了済み
-                  </div>
-                  <div th:unless="${issue.completed}" class="badge badge-warning gap-2 text-white font-semibold px-4 py-3">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    進行中
                   </div>
                 </div>
               </div>

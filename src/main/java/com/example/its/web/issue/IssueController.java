@@ -8,19 +8,22 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/issues")
-@RequiredArgsConstructor //finalが付いたフィールドを引数とするコンストラクタを自動生成するアノテ
+@RequiredArgsConstructor //finalが付いたフィールドを引数とするコンストラクタを自動生成するアノテーション
 public class IssueController {
     private final IssueService issueService;
 
     // 課題一覧を表示する
     @GetMapping
     public String listIssues(Model model) {
-        // 未完了の課題リストをモデルに追加し、ビューに渡す
+        // 各ステータス別の課題リストをモデルに追加し、ビューに渡す
+        model.addAttribute("todoIssues", issueService.findAllTodoIssues());
+        model.addAttribute("doingIssues", issueService.findAllDoingIssues());
+        model.addAttribute("doneIssues", issueService.findAllDoneIssues());
+        
+        // 後方互換性のために既存の属性も追加
         model.addAttribute("incompleteIssues", issueService.findAllIncompleteIssues());
-        // 完了した課題リストをモデルに追加し、ビューに渡す
         model.addAttribute("completedIssues", issueService.findAllCompletedIssues());
-        //↓この行にBPはってデバッグし、右クリ→式の評価→model、でmodelに値がちゃんと入ってるのが確認できる。
-        // てことはviewに値を渡す準備できてるってこと。
+        
         return "issues/list"; // 課題リストのビューを返す
     }
 
@@ -37,6 +40,21 @@ public class IssueController {
         return "issues/detail"; // 課題の詳細ビューを返す
     }
 
+    // 課題のステータスを次の段階に進める
+    @PostMapping("/next")
+    public String moveToNextStatus(@RequestParam Long id) {
+        issueService.moveToNextStatus(id);
+        return "redirect:/issues"; // 課題一覧にリダイレクトする
+    }
+
+    // 課題のステータスを前の段階に戻す
+    @PostMapping("/previous")
+    public String moveToPreviousStatus(@RequestParam Long id) {
+        issueService.moveToPreviousStatus(id);
+        return "redirect:/issues"; // 課題一覧にリダイレクトする
+    }
+
+    // 後方互換性のための既存のエンドポイント
     @PostMapping("/complete")
     public String completeIssue(@RequestParam Long id) {
         issueService.completeIssue(id);

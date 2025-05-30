@@ -5,7 +5,7 @@ create table issues (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     summary VARCHAR(256) NOT NULL,
     description VARCHAR(256) NOT NULL,
-    is_completed BOOLEAN DEFAULT FALSE  -- 完了フラグ
+    status VARCHAR(10) DEFAULT 'TODO'  -- 課題のステータス：TODO, DOING, DONE
 );
 
 create table users (

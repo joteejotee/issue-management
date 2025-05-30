@@ -11,6 +11,24 @@ public class IssueService {
 
     private final IssueRepository issueRepository;
 
+    // TODO状態の課題を取得
+    @Transactional
+    public List<IssueEntity> findAllTodoIssues() {
+        return issueRepository.findAllTodoIssues();
+    }
+
+    // DOING状態の課題を取得
+    @Transactional
+    public List<IssueEntity> findAllDoingIssues() {
+        return issueRepository.findAllDoingIssues();
+    }
+
+    // DONE状態の課題を取得
+    @Transactional
+    public List<IssueEntity> findAllDoneIssues() {
+        return issueRepository.findAllDoneIssues();
+    }
+
     // 未完了の課題をリポジトリから全て取得して返す
     @Transactional
     public List<IssueEntity> findAllIncompleteIssues() {
@@ -23,10 +41,33 @@ public class IssueService {
         return issueRepository.findAllCompletedIssues();
     }
 
-    // 指定されたIDの課題を完了状態に更新する
+    // 課題のステータスを次の段階に進める
+    @Transactional
+    public void moveToNextStatus(Long id) {
+        issueRepository.moveToNextStatus(id);
+    }
+
+    // 課題のステータスを前の段階に戻す
+    @Transactional
+    public void moveToPreviousStatus(Long id) {
+        issueRepository.moveToPreviousStatus(id);
+    }
+
+    // 課題のステータスを完了状態に更新する
     @Transactional
     public void completeIssue(Long id) {
-        issueRepository.completeIssue(id);
+        // 既存の動作を維持：完了状態をトグル
+        IssueEntity issue = issueRepository.findById(id);
+        if (issue.getStatus() == IssueStatus.DONE) {
+            // 完了 → TODO に戻す
+            issueRepository.moveToPreviousStatus(id);
+            issueRepository.moveToPreviousStatus(id); // DOING → TODO
+        } else {
+            // TODO/DOING → DONE に進める
+            while (issueRepository.findById(id).getStatus() != IssueStatus.DONE) {
+                issueRepository.moveToNextStatus(id);
+            }
+        }
     }
 
     // リポジトリから指定されたIDの課題を取得して返す(既存のメソッドをそのまま保持)

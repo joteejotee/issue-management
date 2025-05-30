@@ -36,19 +36,19 @@
             <!-- Trelloスタイルのボードレイアウト -->
             <div class="flex flex-col lg:flex-row gap-6 h-full">
 
-                <!-- 課題カラム（青色） -->
+                <!-- TODO カラム（青色） -->
                 <div class="flex-1 bg-blue-50 rounded-lg p-4 min-h-96 border border-blue-200">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-2">
                             <h2 class="text-lg font-semibold text-gray-800">📋 課題</h2>
-                            <span class="badge badge-primary badge-sm" th:text="${#lists.size(incompleteIssues)}">0</span>
+                            <span class="badge badge-primary badge-sm" th:text="${#lists.size(todoIssues)}">0</span>
                         </div>
                         <button class="btn btn-ghost btn-xs">⋯</button>
                     </div>
 
                     <div class="space-y-3">
-                        <!-- 未完了課題がない場合 -->
-                        <div th:if="${#lists.isEmpty(incompleteIssues)}" class="text-center py-8">
+                        <!-- TODO課題がない場合 -->
+                        <div th:if="${#lists.isEmpty(todoIssues)}" class="text-center py-8">
                             <div class="text-gray-400 mb-2">
                                 <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v16m8-8H4"></path>
@@ -57,14 +57,14 @@
                             <p class="text-sm text-gray-500">課題はありません</p>
                         </div>
 
-                        <!-- 未完了課題カード -->
-                        <div th:each="issue : ${incompleteIssues}" class="bg-white rounded-lg shadow-sm border p-3 hover:shadow-md transition-shadow cursor-pointer group">
+                        <!-- TODO課題カード -->
+                        <div th:each="issue : ${todoIssues}" class="bg-white rounded-lg shadow-sm border p-3 hover:shadow-md transition-shadow cursor-pointer group">
                             <a th:href="@{/issues/{issueId}(issueId=${issue.id})}" class="block">
                                 <h3 class="text-sm font-medium text-gray-800 mb-2 group-hover:text-blue-600" th:text="${issue.summary}">課題のタイトル</h3>
                             </a>
                             <div class="flex items-center justify-between">
                                 <div class="flex gap-1">
-                                    <button type="button" class="complete-button btn btn-success btn-xs" th:data-issue-id="${issue.id}" title="作業中に移動">
+                                    <button type="button" class="next-button btn btn-success btn-xs" th:data-issue-id="${issue.id}" title="作業中に移動">
                                         →
                                     </button>
                                     <button type="button" class="delete-button btn btn-error btn-xs" th:data-issue-id="${issue.id}" title="削除">
@@ -82,25 +82,46 @@
                     </div>
                 </div>
 
-                <!-- 作業中カラム（黄色） -->
+                <!-- DOING カラム（黄色） -->
                 <div class="flex-1 bg-yellow-50 rounded-lg p-4 min-h-96 border border-yellow-200">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-2">
                             <h2 class="text-lg font-semibold text-gray-800">🔄 作業中</h2>
-                            <span class="badge badge-warning badge-sm">0</span>
+                            <span class="badge badge-warning badge-sm" th:text="${#lists.size(doingIssues)}">0</span>
                         </div>
                         <button class="btn btn-ghost btn-xs">⋯</button>
                     </div>
 
                     <div class="space-y-3">
-                        <!-- 作業中の課題がない場合 -->
-                        <div class="text-center py-8">
+                        <!-- DOING課題がない場合 -->
+                        <div th:if="${#lists.isEmpty(doingIssues)}" class="text-center py-8">
                             <div class="text-gray-400 mb-2">
                                 <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
                             <p class="text-sm text-gray-500">作業中の課題はありません</p>
+                        </div>
+
+                        <!-- DOING課題カード -->
+                        <div th:each="issue : ${doingIssues}" class="bg-white rounded-lg shadow-sm border p-3 hover:shadow-md transition-shadow cursor-pointer group">
+                            <a th:href="@{/issues/{issueId}(issueId=${issue.id})}" class="block">
+                                <h3 class="text-sm font-medium text-gray-800 mb-2 group-hover:text-blue-600" th:text="${issue.summary}">課題のタイトル</h3>
+                            </a>
+                            <div class="flex items-center justify-between">
+                                <div class="flex gap-1">
+                                    <button type="button" class="previous-button btn btn-outline btn-primary btn-xs" th:data-issue-id="${issue.id}" title="課題に戻す">
+                                        ←
+                                    </button>
+                                    <button type="button" class="next-button btn btn-success btn-xs" th:data-issue-id="${issue.id}" title="完了に移動">
+                                        →
+                                    </button>
+                                    <button type="button" class="delete-button btn btn-error btn-xs" th:data-issue-id="${issue.id}" title="削除">
+                                        🗑
+                                    </button>
+                                </div>
+                                <span class="text-xs text-gray-400">#<span th:text="${issue.id}">1</span></span>
+                            </div>
                         </div>
 
                         <!-- カード追加ボタン -->
@@ -110,19 +131,19 @@
                     </div>
                 </div>
 
-                <!-- 完了カラム（緑色） -->
+                <!-- DONE カラム（緑色） -->
                 <div class="flex-1 bg-green-50 rounded-lg p-4 min-h-96 border border-green-200">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-2">
                             <h2 class="text-lg font-semibold text-gray-800">✅ 完了</h2>
-                            <span class="badge badge-success badge-sm" th:text="${#lists.size(completedIssues)}">0</span>
+                            <span class="badge badge-success badge-sm" th:text="${#lists.size(doneIssues)}">0</span>
                         </div>
                         <button class="btn btn-ghost btn-xs">⋯</button>
                     </div>
 
                     <div class="space-y-3">
-                        <!-- 完了課題がない場合 -->
-                        <div th:if="${#lists.isEmpty(completedIssues)}" class="text-center py-8">
+                        <!-- DONE課題がない場合 -->
+                        <div th:if="${#lists.isEmpty(doneIssues)}" class="text-center py-8">
                             <div class="text-gray-400 mb-2">
                                 <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -131,8 +152,8 @@
                             <p class="text-sm text-gray-500">完了した課題はありません</p>
                         </div>
 
-                        <!-- 完了課題カード -->
-                        <div th:each="issue : ${completedIssues}" class="bg-white rounded-lg shadow-sm border p-3 hover:shadow-md transition-shadow cursor-pointer group opacity-75">
+                        <!-- DONE課題カード -->
+                        <div th:each="issue : ${doneIssues}" class="bg-white rounded-lg shadow-sm border p-3 hover:shadow-md transition-shadow cursor-pointer group opacity-75">
                             <a th:href="@{/issues/{issueId}(issueId=${issue.id})}" class="block">
                                 <div class="flex items-start gap-2 mb-2">
                                     <svg class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,9 +163,14 @@
                                 </div>
                             </a>
                             <div class="flex items-center justify-between">
-                                <button type="button" class="complete-button btn btn-outline btn-primary btn-xs" th:data-issue-id="${issue.id}" title="課題に戻す">
-                                    ←
-                                </button>
+                                <div class="flex gap-1">
+                                    <button type="button" class="previous-button btn btn-outline btn-primary btn-xs" th:data-issue-id="${issue.id}" title="作業中に戻す">
+                                        ←
+                                    </button>
+                                    <button type="button" class="delete-button btn btn-error btn-xs" th:data-issue-id="${issue.id}" title="削除">
+                                        🗑
+                                    </button>
+                                </div>
                                 <span class="text-xs text-gray-400">#<span th:text="${issue.id}">1</span></span>
                             </div>
                         </div>
@@ -160,7 +186,58 @@
     </div>
 
     <!-- JavaScriptファイルの読み込み -->
-    <script src="/js/completeIssue.js"></script>
+    <script src="/js/issueBoard.js"></script>
+
+    <!-- デバッグ用インラインJavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("Inline JavaScript loaded");
+
+            // デバッグ：ボタンの数を確認
+            const nextButtons = document.querySelectorAll(".next-button");
+            const previousButtons = document.querySelectorAll(".previous-button");
+            const deleteButtons = document.querySelectorAll(".delete-button");
+
+            console.log(`Found ${nextButtons.length} next buttons`);
+            console.log(`Found ${previousButtons.length} previous buttons`);
+            console.log(`Found ${deleteButtons.length} delete buttons`);
+
+            // デバッグ：CSRFトークンを確認
+            const csrfToken = document.querySelector('meta[name="_csrf"]');
+            console.log("CSRF token element:", csrfToken);
+            if (csrfToken) {
+                console.log("CSRF token value:", csrfToken.getAttribute('content'));
+            } else {
+                console.error("CSRF token not found!");
+            }
+
+            // テスト用：最初のnext-buttonにクリックリスナーを追加
+            if (nextButtons.length > 0) {
+                nextButtons[0].addEventListener("click", function (event) {
+                    event.preventDefault();
+                    console.log("Next button clicked!");
+                    console.log("Issue ID:", this.getAttribute("data-issue-id"));
+
+                    const issueId = this.getAttribute("data-issue-id");
+                    const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+
+                    const form = document.createElement("form");
+                    form.method = "post";
+                    form.action = "/issues/next";
+                    form.style.display = "none";
+
+                    form.innerHTML = `
+                    <input type="hidden" name="id" value="${issueId}">
+                    <input type="hidden" name="_csrf" value="${token}">
+                `;
+
+                    document.body.appendChild(form);
+                    console.log("Submitting form:", form);
+                    form.submit();
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>
