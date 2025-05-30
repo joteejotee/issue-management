@@ -10,22 +10,7 @@
   <meta name="_csrf_header" th:content="${_csrf.headerName}" /> <!-- CSRFトークンのヘッダー名を設定 -->
   <!-- 【fragmentインクルード】上にあるfragmentで受け取ったパラメータで置換する -->
   <title th:replace="${title}">(default title)</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.min.css" rel="stylesheet" type="text/css" />
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#3b82f6',
-            secondary: '#1d4ed8',
-            fluid1: '#a7f3d0',
-            fluid2: '#67e8f9'
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="stylesheet" href="/css/style.css">
   <style>
     /* カスタムアニメーション */
     @keyframes float {
