@@ -1,4 +1,7 @@
 package com.example.its.config;
+
+import com.example.its.domain.user.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 //HTTPリクエストのセキュリティ設定を行うためのクラス
@@ -23,30 +26,33 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+
     //メソッドがBean（オブジェクト）を生成することを示す
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/", "/home").permitAll() // ホームページは誰でもアクセス可能
+                        .requestMatchers("/", "/home", "/login").permitAll() // ホームページとログインページは誰でもアクセス可能
+                        .requestMatchers("/images/**", "/css/**", "/js/**").permitAll() // 静的リソースは誰でもアクセス可能
                         .anyRequest().authenticated() // その他のリクエストは認証が必要
                 )
-                .formLogin(login -> login.permitAll()
+                .formLogin(login -> login
+                        .loginPage("/login") // カスタムログインページ
+                        .loginProcessingUrl("/perform_login") // ログイン処理URL
+                        .defaultSuccessUrl("/issues", true) // ログイン成功時のリダイレクト先
+                        .failureUrl("/login?error=true") // ログイン失敗時のリダイレクト先
+                        .permitAll()
                 )
-                .logout(logout -> logout.permitAll()
-                );
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .permitAll()
+                )
+                .userDetailsService(customUserDetailsService); // カスタムUserDetailsServiceを使用
+        
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.builder()
-                .username("user")
-                .password(passwordEncoder().encode("password"))
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
     }
 
     @Bean
