@@ -1,67 +1,194 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout :: layout(~{::title}, ~{::body})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::body})}">
+
 <head>
     <title>課題一覧 | 課題管理アプリケーション</title>
 </head>
+
 <body>
-<div class="row px-5">
-    <div class="col px-5 mx-5">
-        <h1 class="mt-3">課題一覧</h1>
-        <div class="d-flex justify-content-end mt-2">
-            <a href="../index.html" th:href="@{/}" class="btn btn-success ms-2">トップページ</a>
-            <a href="./creationForm.html" th:href="@{/issues/creationForm}" class="btn btn-primary ms-2">作成</a>
+    <div class="min-h-screen bg-white relative overflow-hidden">
+        <!-- 流体形状の背景 -->
+        <div class="absolute inset-0 overflow-hidden">
+            <!-- 第1層：メインの流体形状 -->
+            <svg class="absolute top-0 right-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="xMaxYMid slice">
+                <defs>
+                    <linearGradient id="fluidGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#dbeafe" />
+                        <stop offset="50%" style="stop-color:#bfdbfe" />
+                        <stop offset="100%" style="stop-color:#93c5fd" />
+                    </linearGradient>
+                </defs>
+                <path d="M1440,0 C1280,120 1180,200 1000,280 C800,380 600,480 400,520 C250,550 150,600 80,680 C40,720 0,760 0,800 L1440,800 Z" fill="url(#fluidGradient1)" opacity="0.6" />
+            </svg>
+
+            <!-- 第2層：セカンダリの流体形状 -->
+            <svg class="absolute top-0 right-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="xMaxYMid slice">
+                <defs>
+                    <linearGradient id="fluidGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#a7f3d0" />
+                        <stop offset="100%" style="stop-color:#67e8f9" />
+                    </linearGradient>
+                </defs>
+                <path d="M1440,120 C1200,180 1050,300 850,350 C650,400 450,500 300,580 C200,630 120,700 60,750 C30,775 0,790 0,800 L1440,800 Z" fill="url(#fluidGradient2)" opacity="0.4" />
+            </svg>
+
+            <!-- 第3層：アクセント -->
+            <svg class="absolute top-0 right-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="xMaxYMid slice">
+                <defs>
+                    <linearGradient id="fluidGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#e0f2fe" />
+                        <stop offset="100%" style="stop-color:#b3e5fc" />
+                    </linearGradient>
+                </defs>
+                <path d="M1440,200 C1300,250 1100,320 900,380 C700,440 500,550 350,620 C250,660 180,720 100,770 C50,795 20,805 0,800 L1440,800 Z" fill="url(#fluidGradient3)" opacity="0.3" />
+            </svg>
         </div>
 
-        <!-- 未完了の課題 -->
-        <table class="table">
-            <thead>
-            <tr>
-                <td>課題</td>
-            </tr>
-            </thead>
-            <tbody class="table-group-divider">
-            <!-- 課題リストをループして表示 -->
-            <tr th:each="issue : ${incompleteIssues}"> <!-- 未完了の課題リストをループ処理し、それぞれの課題を参照する -->
-                <td class="align-middle">
-                    <a th:href="@{/issues/{issueId}(issueId=${issue.id})}" th:text="${issue.summary}"
-                       class="d-block w-100 text-start"></a> <!-- 課題の概要をリンクとして表示し、詳細ページへのリンクを生成する -->
-                </td>
-                <td class="align-middle text-end pe-5">
-                    <button type="button" class="complete-button btn btn-primary" th:data-issue-id="${issue.id}">
-                        完了</button> <!-- 完了ボタン、課題IDをdata属性に設定 -->
-                    <button type="button" class="delete-button btn btn-danger ms-2" th:data-issue-id="${issue.id}">
-                        削除</button> <!-- 削除ボタン、課題IDをdata属性に設定 -->
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <!-- メインコンテンツ -->
+        <div class="relative z-10 min-h-screen p-4 md:p-8">
+            <div class="max-w-6xl mx-auto">
+                <!-- ヘッダー -->
+                <div class="card bg-white/90 backdrop-blur-sm shadow-xl border border-blue-100 mb-6">
+                    <div class="card-body p-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div>
+                                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">課題一覧</h1>
+                                <p class="text-gray-600">プロジェクトの課題を効率的に管理しましょう</p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <a href="/" class="btn btn-outline btn-primary">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                    </svg>
+                                    トップページ
+                                </a>
+                                <a href="/issues/creationForm" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    課題を作成
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- 完了した課題 -->
-        <h2 class="mt-5">完了した課題</h2>
-        <table class="table">
-            <thead>
-            <tr>
-                <td>課題</td>
-            </tr>
-            </thead>
-            <tbody class="table-group-divider">
-            <tr th:each="issue : ${completedIssues}"> <!-- 完了した課題リストをループ処理し、それぞれの課題を参照する -->
-                <td class="align-middle">
-                    <a th:href="@{/issues/{issueId}(issueId=${issue.id})}" th:text="${issue.summary}"
-                       class="d-block w-100 text-start"></a> <!-- 課題の概要をリンクとして表示し、詳細ページへのリンクを生成する -->
-                </td>
-                <td class="align-middle text-end pe-5">
-                    <button type="button" class="complete-button btn btn-outline-primary"
-                            th:data-issue-id="${issue.id}">戻す
-                    </button> <!-- 戻すボタン、課題IDをdata属性に設定 -->
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                <!-- 未完了の課題セクション -->
+                <div class="card bg-white/90 backdrop-blur-sm shadow-xl border border-blue-100 mb-6">
+                    <div class="card-body p-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="flex items-center justify-center w-10 h-10 bg-amber-100 rounded-full">
+                                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-800">進行中の課題</h2>
+                            <div class="badge badge-warning text-white font-semibold" th:text="${#lists.size(incompleteIssues)} + '件'">0件</div>
+                        </div>
+
+                        <!-- 未完了課題リスト -->
+                        <div th:if="${#lists.isEmpty(incompleteIssues)}" class="text-center py-12">
+                            <div class="flex flex-col items-center gap-4">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-1">素晴らしい！</h3>
+                                    <p class="text-gray-500">現在進行中の課題はありません</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:unless="${#lists.isEmpty(incompleteIssues)}" class="space-y-3">
+                            <div th:each="issue : ${incompleteIssues}" class="card bg-white border border-gray-200 hover:shadow-md transition-all duration-200">
+                                <div class="card-body p-4">
+                                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                                        <div class="flex-1">
+                                            <a th:href="@{/issues/{issueId}(issueId=${issue.id})}" class="text-lg font-semibold text-gray-800 hover:text-primary transition-colors duration-200" th:text="${issue.summary}">課題のタイトル</a>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button type="button" class="complete-button btn btn-success btn-sm" th:data-issue-id="${issue.id}">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                                完了
+                                            </button>
+                                            <button type="button" class="delete-button btn btn-error btn-sm" th:data-issue-id="${issue.id}">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                                削除
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 完了した課題セクション -->
+                <div class="card bg-white/90 backdrop-blur-sm shadow-xl border border-blue-100">
+                    <div class="card-body p-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="flex items-center justify-center w-10 h-10 bg-green-100 rounded-full">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-800">完了した課題</h2>
+                            <div class="badge badge-success text-white font-semibold" th:text="${#lists.size(completedIssues)} + '件'">0件</div>
+                        </div>
+
+                        <!-- 完了課題リスト -->
+                        <div th:if="${#lists.isEmpty(completedIssues)}" class="text-center py-12">
+                            <div class="flex flex-col items-center gap-4">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-1">まだ完了した課題はありません</h3>
+                                    <p class="text-gray-500">課題を完了すると、ここに表示されます</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:unless="${#lists.isEmpty(completedIssues)}" class="space-y-3">
+                            <div th:each="issue : ${completedIssues}" class="card bg-green-50 border border-green-200 hover:shadow-md transition-all duration-200">
+                                <div class="card-body p-4">
+                                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                                <a th:href="@{/issues/{issueId}(issueId=${issue.id})}" class="text-lg font-semibold text-gray-700 hover:text-primary transition-colors duration-200 line-through decoration-green-400" th:text="${issue.summary}">完了した課題のタイトル</a>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button type="button" class="complete-button btn btn-outline btn-primary btn-sm" th:data-issue-id="${issue.id}">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+                                                </svg>
+                                                戻す
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-<!-- JavaScriptファイルの読み込み -->
-<script src="/js/completeIssue.js"></script>
+
+    <!-- JavaScriptファイルの読み込み -->
+    <script src="/js/completeIssue.js"></script>
 </body>
+
 </html>

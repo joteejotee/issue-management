@@ -1,16 +1,159 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout :: layout(~{::title}, ~{::body})}">
-<head>
-    <title>課題詳細 | 課題管理アプリケーション</title>
-</head>
-<body>
-<h1 class="mt-3">課題詳細</h1>
-<a href="./list.html" th:href="@{/issues}">一覧に戻る</a>
-<div>
-  <h2 th:text="${issue.summary}">(summary)</h2>
-  <p th:text="${issue.description}">(description)</p>
-</div>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::body})}">
 
+<head>
+  <title>課題詳細 | 課題管理アプリケーション</title>
+</head>
+
+<body>
+  <div class="min-h-screen bg-white relative overflow-hidden">
+    <!-- 流体形状の背景 -->
+    <div class="absolute inset-0 overflow-hidden">
+      <!-- 第1層：メインの流体形状 -->
+      <svg class="absolute top-0 right-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="xMaxYMid slice">
+        <defs>
+          <linearGradient id="fluidGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#dbeafe" />
+            <stop offset="50%" style="stop-color:#bfdbfe" />
+            <stop offset="100%" style="stop-color:#93c5fd" />
+          </linearGradient>
+        </defs>
+        <path d="M1440,0 C1280,120 1180,200 1000,280 C800,380 600,480 400,520 C250,550 150,600 80,680 C40,720 0,760 0,800 L1440,800 Z" fill="url(#fluidGradient1)" opacity="0.6" />
+      </svg>
+
+      <!-- 第2層：セカンダリの流体形状 -->
+      <svg class="absolute top-0 right-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="xMaxYMid slice">
+        <defs>
+          <linearGradient id="fluidGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#a7f3d0" />
+            <stop offset="100%" style="stop-color:#67e8f9" />
+          </linearGradient>
+        </defs>
+        <path d="M1440,120 C1200,180 1050,300 850,350 C650,400 450,500 300,580 C200,630 120,700 60,750 C30,775 0,790 0,800 L1440,800 Z" fill="url(#fluidGradient2)" opacity="0.4" />
+      </svg>
+
+      <!-- 第3層：アクセント -->
+      <svg class="absolute top-0 right-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="xMaxYMid slice">
+        <defs>
+          <linearGradient id="fluidGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#e0f2fe" />
+            <stop offset="100%" style="stop-color:#b3e5fc" />
+          </linearGradient>
+        </defs>
+        <path d="M1440,200 C1300,250 1100,320 900,380 C700,440 500,550 350,620 C250,660 180,720 100,770 C50,795 20,805 0,800 L1440,800 Z" fill="url(#fluidGradient3)" opacity="0.3" />
+      </svg>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="relative z-10 min-h-screen p-4 md:p-8">
+      <div class="max-w-4xl mx-auto">
+        <!-- ナビゲーション -->
+        <div class="mb-6">
+          <a href="/issues" class="btn btn-outline btn-primary">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            課題一覧に戻る
+          </a>
+        </div>
+
+        <!-- メインカード -->
+        <div class="card bg-white/90 backdrop-blur-sm shadow-2xl border border-blue-100">
+          <div class="card-body p-8">
+            <!-- ヘッダー -->
+            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-200">
+              <div class="avatar">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="flex-1">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">課題詳細</h1>
+                <p class="text-gray-600">課題の詳細情報を確認できます</p>
+              </div>
+            </div>
+
+            <!-- 課題情報 -->
+            <div class="space-y-8">
+              <!-- 概要セクション -->
+              <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                  </div>
+                  <h2 class="text-xl font-bold text-gray-800">課題の概要</h2>
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-800 leading-relaxed" th:text="${issue.summary}">課題のタイトル</h3>
+              </div>
+
+              <!-- 詳細説明セクション -->
+              <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                  </div>
+                  <h2 class="text-xl font-bold text-gray-800">詳細説明</h2>
+                </div>
+                <div class="prose prose-lg max-w-none">
+                  <p class="text-gray-700 leading-relaxed whitespace-pre-wrap" th:text="${issue.description}">課題の詳細な説明がここに表示されます。</p>
+                </div>
+              </div>
+
+              <!-- 課題の状態 -->
+              <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl p-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="flex items-center justify-center w-8 h-8 bg-amber-500 rounded-full">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <h2 class="text-xl font-bold text-gray-800">ステータス</h2>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div th:if="${issue.completed}" class="badge badge-success gap-2 text-white font-semibold px-4 py-3">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    完了済み
+                  </div>
+                  <div th:unless="${issue.completed}" class="badge badge-warning gap-2 text-white font-semibold px-4 py-3">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    進行中
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- アクションボタン -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+              <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/issues" class="btn btn-primary bg-gradient-to-r from-primary to-secondary border-none flex-1 sm:flex-none px-8">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                  </svg>
+                  課題一覧へ
+                </a>
+                <a href="/issues/creationForm" class="btn btn-outline btn-primary flex-1 sm:flex-none px-8">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                  新しい課題を作成
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
+
 </html>
