@@ -9,6 +9,16 @@ module.exports = {
         fluid1: "#a7f3d0",
         fluid2: "#67e8f9",
       },
+      fontFamily: {
+        sans: [
+          "Inter",
+          "Noto Sans JP",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "sans-serif",
+        ],
+      },
     },
   },
   plugins: [require("daisyui")],
