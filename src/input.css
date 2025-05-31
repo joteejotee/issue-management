@@ -1,6 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+}
 
 /* Inter フォント */
 @font-face {
@@ -85,4 +86,15 @@
 
 .float-animation {
   animation: float 3s ease-in-out infinite;
+}
+
+/* line-clamp-2 ユーティリティクラス */
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
