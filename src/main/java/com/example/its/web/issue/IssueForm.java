@@ -14,4 +14,6 @@ public class IssueForm {
     @NotBlank
     @Size(max=256)
     private String description;
+    
+    private Long assigneeId; // 担当者ID（オプション）
 }

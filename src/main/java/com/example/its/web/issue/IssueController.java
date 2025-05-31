@@ -1,5 +1,6 @@
 package com.example.its.web.issue;
 
+import com.example.its.domain.assignee.AssigneeService;
 import com.example.its.domain.issue.IssueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor //finalが付いたフィールドを引数とするコンストラクタを自動生成するアノテーション
 public class IssueController {
     private final IssueService issueService;
+    private final AssigneeService assigneeService;
 
     // 課題一覧を表示する
     @GetMapping
@@ -24,19 +26,32 @@ public class IssueController {
         model.addAttribute("incompleteIssues", issueService.findAllIncompleteIssues());
         model.addAttribute("completedIssues", issueService.findAllCompletedIssues());
         
+        // 担当者一覧も追加
+        model.addAttribute("assignees", assigneeService.findAll());
+        
         return "issues/list"; // 課題リストのビューを返す
     }
 
     // 課題作成フォームを表示する
     @GetMapping("/creationForm")
-    public String showCreationForm(@ModelAttribute IssueForm form) {
+    public String showCreationForm(@ModelAttribute IssueForm form, Model model) {
+        // 担当者一覧をフォームに渡す
+        model.addAttribute("assignees", assigneeService.findAll());
         return "issues/creationForm";
     }
 
     // 指定されたIDの課題の詳細をモデルに追加し、ビューに渡す
     @GetMapping("/{id}")
     public String getIssueDetails(@PathVariable Long id, Model model) {
-        model.addAttribute("issue", issueService.findById(id));
+        var issue = issueService.findById(id);
+        model.addAttribute("issue", issue);
+        
+        // 担当者情報も追加
+        if (issue.getAssigneeId() != null) {
+            var assignee = assigneeService.findById(issue.getAssigneeId());
+            assignee.ifPresent(a -> model.addAttribute("assignee", a));
+        }
+        
         return "issues/detail"; // 課題の詳細ビューを返す
     }
 
@@ -64,7 +79,11 @@ public class IssueController {
     // フォームから受け取った課題を作成し、データベースに保存する(既存のメソッドをそのまま保持)
     @PostMapping
     public String createIssue(@ModelAttribute IssueForm form) {
-        issueService.insert(form.getSummary(), form.getDescription());
+        if (form.getAssigneeId() != null) {
+            issueService.insertWithAssignee(form.getSummary(), form.getDescription(), form.getAssigneeId());
+        } else {
+            issueService.insert(form.getSummary(), form.getDescription());
+        }
         return "redirect:/issues"; // 課題一覧にリダイレクトする
     }
 

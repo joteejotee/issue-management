@@ -82,6 +82,18 @@ public class IssueService {
         issueRepository.insert(summary, description);
     }
 
+    // 担当者付きで新しい課題をDBに挿入する
+    @Transactional
+    public void insertWithAssignee(String summary, String description, Long assigneeId) {
+        issueRepository.insertWithAssignee(summary, description, assigneeId);
+    }
+
+    // 課題の担当者を更新する
+    @Transactional
+    public void updateAssignee(Long issueId, Long assigneeId) {
+        issueRepository.updateAssignee(issueId, assigneeId);
+    }
+
     // 指定されたIDの課題を削除する
     @Transactional
     public void delete(Long id) {

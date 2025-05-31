@@ -3,6 +3,15 @@
   themes: light --default, dark --prefersdark;
 }
 
+/* カスタムプライマリーカラー（青色に変更） */
+:root,
+[data-theme="light"] {
+  --color-primary: #2563eb; /* blue-600 */
+  --color-primary-content: #ffffff;
+  --color-secondary: #3b82f6; /* blue-500 */
+  --color-secondary-content: #ffffff;
+}
+
 /* Inter フォント */
 @font-face {
   font-family: "Inter";
@@ -96,5 +105,18 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+
+/* アバター用カスタムクラス */
+@layer components {
+  /* CSS変数でアバターの角丸サイズを定義 */
+  :root {
+    --radius-avatar-large: 1rem;
+  }
+
+  /* 大きな角丸を持つ画像 */
+  .avatar-large-radius img {
+    border-radius: var(--radius-avatar-large) !important;
   }
 }

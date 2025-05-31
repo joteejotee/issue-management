@@ -10,6 +10,7 @@ public class IssueEntity {
     private String summary;//課題概要
     private String description;//課題詳細
     private IssueStatus status; // 課題のステータス：TODO, DOING, DONE
+    private Long assigneeId; // 担当者ID（NULLを許可）
 
     // 後方互換性のためのヘルパーメソッド
     public boolean isCompleted() {

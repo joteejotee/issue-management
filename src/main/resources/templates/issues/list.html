@@ -23,6 +23,12 @@
               </svg>
               トップページ
             </a>
+            <a href="/assignees" class="btn btn-outline">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+              </svg>
+              担当者一覧
+            </a>
             <a href="/issues/creationForm" class="btn btn-primary">
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -39,8 +45,7 @@
         <!-- TODO カラム -->
         <div>
           <div class="flex items-center gap-2 mb-4">
-            <h2 class="text-lg font-semibold text-gray-800">📋 課題</h2>
-            <div class="badge badge-neutral" th:text="${#lists.size(todoIssues)}">0</div>
+            <h2 class="text-lg font-semibold text-gray-800">課題</h2>
           </div>
 
           <ul class="list bg-base-100 rounded-box shadow-md">
@@ -53,9 +58,21 @@
 
             <!-- TODO課題カード -->
             <li th:each="issue : ${todoIssues}" class="list-row">
-              <div><img class="size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/1@94.webp" /></div>
+              <!-- 担当者情報の表示 -->
+              <div th:if="${issue.assigneeId != null}" class="avatar-large-radius">
+                <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}">
+                  <img class="size-10 rounded-box object-cover" th:src="${assignee.photoUrl}" th:alt="${assignee.name}" onerror="this.src='https://img.daisyui.com/images/profile/demo/1@94.webp'" />
+                </div>
+              </div>
+              <div th:if="${issue.assigneeId == null}" class="avatar-large-radius">
+                <img class="size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/1@94.webp" />
+              </div>
+
               <div>
-                <div>担当者未定</div>
+                <div th:if="${issue.assigneeId != null}">
+                  <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}" th:text="${assignee.name}">担当者名</div>
+                </div>
+                <div th:if="${issue.assigneeId == null}">担当者未定</div>
                 <div class="text-xs uppercase font-semibold opacity-60 line-clamp-2" th:text="${issue.summary}">課題のタイトル</div>
               </div>
               <p class="list-col-wrap text-xs line-clamp-2" th:text="${issue.description}">
@@ -80,8 +97,7 @@
         <!-- DOING カラム -->
         <div>
           <div class="flex items-center gap-2 mb-4">
-            <h2 class="text-lg font-semibold text-gray-800">🔄 作業中</h2>
-            <div class="badge badge-neutral" th:text="${#lists.size(doingIssues)}">0</div>
+            <h2 class="text-lg font-semibold text-gray-800">作業中</h2>
           </div>
 
           <ul class="list bg-base-100 rounded-box shadow-md">
@@ -94,9 +110,21 @@
 
             <!-- DOING課題カード -->
             <li th:each="issue : ${doingIssues}" class="list-row">
-              <div><img class="size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/4@94.webp" /></div>
+              <!-- 担当者情報の表示 -->
+              <div th:if="${issue.assigneeId != null}" class="avatar-large-radius">
+                <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}">
+                  <img class="size-10 rounded-box object-cover" th:src="${assignee.photoUrl}" th:alt="${assignee.name}" onerror="this.src='https://img.daisyui.com/images/profile/demo/4@94.webp'" />
+                </div>
+              </div>
+              <div th:if="${issue.assigneeId == null}" class="avatar-large-radius">
+                <img class="size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/4@94.webp" />
+              </div>
+
               <div>
-                <div>担当者未定</div>
+                <div th:if="${issue.assigneeId != null}">
+                  <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}" th:text="${assignee.name}">担当者名</div>
+                </div>
+                <div th:if="${issue.assigneeId == null}">担当者未定</div>
                 <div class="text-xs uppercase font-semibold opacity-60 line-clamp-2" th:text="${issue.summary}">課題のタイトル</div>
               </div>
               <p class="list-col-wrap text-xs line-clamp-2" th:text="${issue.description}">
@@ -124,8 +152,7 @@
       <!-- 下段：完了のレイアウト -->
       <div class="w-full">
         <div class="flex items-center gap-2 mb-4">
-          <h2 class="text-lg font-semibold text-gray-800">✅ 完了</h2>
-          <div class="badge badge-neutral" th:text="${#lists.size(doneIssues)}">0</div>
+          <h2 class="text-lg font-semibold text-gray-800">完了</h2>
         </div>
 
         <ul class="list bg-base-100 rounded-box shadow-md">
@@ -138,9 +165,21 @@
 
           <!-- DONE課題カード -->
           <li th:each="issue : ${doneIssues}" class="list-row opacity-75">
-            <div><img class="size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/3@94.webp" /></div>
+            <!-- 担当者情報の表示 -->
+            <div th:if="${issue.assigneeId != null}" class="avatar-large-radius">
+              <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}">
+                <img class="size-10 rounded-box object-cover" th:src="${assignee.photoUrl}" th:alt="${assignee.name}" onerror="this.src='https://img.daisyui.com/images/profile/demo/3@94.webp'" />
+              </div>
+            </div>
+            <div th:if="${issue.assigneeId == null}" class="avatar-large-radius">
+              <img class="size-10 rounded-box" src="https://img.daisyui.com/images/profile/demo/3@94.webp" />
+            </div>
+
             <div>
-              <div class="line-through">担当者未定</div>
+              <div th:if="${issue.assigneeId != null}">
+                <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}" th:text="${assignee.name}" class="line-through">担当者名</div>
+              </div>
+              <div th:if="${issue.assigneeId == null}" class="line-through">担当者未定</div>
               <div class="text-xs uppercase font-semibold opacity-60 line-through line-clamp-2" th:text="${issue.summary}">完了した課題のタイトル</div>
             </div>
             <p class="list-col-wrap text-xs line-through line-clamp-2" th:text="${issue.description}">
