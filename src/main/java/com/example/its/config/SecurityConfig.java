@@ -37,6 +37,8 @@ public class SecurityConfig {
                         // 静的リソースを完全に許可
                         .requestMatchers("/images/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
                         .requestMatchers("/webjars/**", "/static/**", "/public/**").permitAll()
+                        // アップロードファイルへのアクセスを許可
+                        .requestMatchers("/uploads/**").permitAll()
                         // APIエンドポイントを完全に許可
                         .requestMatchers("/api/**").permitAll()
                         // 基本ページを許可

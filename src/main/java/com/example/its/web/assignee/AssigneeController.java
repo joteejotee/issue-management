@@ -2,12 +2,14 @@ package com.example.its.web.assignee;
 
 import com.example.its.domain.assignee.AssigneeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Controller
 @RequestMapping("/assignees")
 @RequiredArgsConstructor
@@ -29,10 +31,29 @@ public class AssigneeController {
 
     @PostMapping
     public String create(@Validated AssigneeForm form, BindingResult bindingResult) {
+        log.info("=== 担当者作成処理開始 ===");
+        log.info("フォームデータ: name={}, photoUrl={}", form.getName(), form.getPhotoUrl());
+        log.info("バリデーションエラー数: {}", bindingResult.getErrorCount());
+        
         if (bindingResult.hasErrors()) {
+            log.error("バリデーションエラーが発生しました:");
+            bindingResult.getAllErrors().forEach(error -> 
+                log.error("- {}", error.getDefaultMessage())
+            );
             return "assignees/creationForm";
         }
-        assigneeService.create(form.getName(), form.getPhotoUrl());
+        
+        try {
+            log.info("担当者サービスのcreateメソッドを呼び出し中...");
+            var createdAssignee = assigneeService.create(form.getName(), form.getPhotoUrl());
+            log.info("担当者作成完了: id={}, name={}, photoUrl={}", 
+                createdAssignee.getId(), createdAssignee.getName(), createdAssignee.getPhotoUrl());
+        } catch (Exception e) {
+            log.error("担当者作成中にエラーが発生しました", e);
+            throw e;
+        }
+        
+        log.info("担当者一覧画面にリダイレクト中...");
         return "redirect:/assignees";
     }
 

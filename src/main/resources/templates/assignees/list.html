@@ -45,7 +45,7 @@
         <figure class="px-10 pt-10">
           <div class="avatar">
             <div class="w-24 rounded-full">
-              <img th:src="${assignee.photoUrl}" th:alt="${assignee.name}" class="object-cover" />
+              <img th:src="${assignee.photoUrl}" th:alt="${assignee.name}" class="object-cover" onerror="console.error('画像読み込み失敗:', this.src); this.src='/images/avatars/default.svg';" onload="console.log('画像読み込み成功:', this.src);" />
             </div>
           </div>
         </figure>

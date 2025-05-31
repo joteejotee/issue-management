@@ -33,9 +33,11 @@ public class FileUploadService {
     // 最大ファイルサイズ（5MB）
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-    // アップロードディレクトリの設定
-    private final String uploadDir = "src/main/resources/static/images/avatars/";
-    private final String publicPath = "/images/avatars/";
+    // アップロードディレクトリの設定（外部ディレクトリを使用）
+    @Value("${app.upload.dir:/app/uploads/avatars}")
+    private String uploadDir;
+    
+    private final String publicPath = "/uploads/avatars/";
 
     /**
      * アバター画像をアップロードする
@@ -46,68 +48,36 @@ public class FileUploadService {
      * @throws RuntimeException ファイル操作エラー
      */
     public String uploadAvatarImage(MultipartFile file) {
-        log.info("=== ファイルアップロードサービス開始 ===");
+        log.info("=== ファイルアップロード開始 ===");
         
-        // 基本バリデーション
+        // バリデーション
         validateFile(file);
-        log.info("基本バリデーション完了");
-
-        // ファイル形式チェック
         validateImageType(file);
-        log.info("ファイル形式バリデーション完了");
-
-        // ファイルサイズチェック
         validateFileSize(file);
-        log.info("ファイルサイズバリデーション完了");
 
         // 安全なファイル名を生成
         String fileName = generateSafeFileName(file.getOriginalFilename());
         log.info("生成されたファイル名: {}", fileName);
 
         try {
-            // アップロードディレクトリを作成（存在しない場合）
+            // アップロードディレクトリを作成
             Path uploadPath = Paths.get(uploadDir);
-            log.info("アップロードディレクトリパス: {}", uploadPath.toAbsolutePath());
-            log.info("ディレクトリが存在するか: {}", Files.exists(uploadPath));
+            Files.createDirectories(uploadPath);
             
-            if (!Files.exists(uploadPath)) {
-                log.info("ディレクトリを作成中...");
-                Files.createDirectories(uploadPath);
-                log.info("アップロードディレクトリを作成しました: {}", uploadPath.toAbsolutePath());
-            }
-            
-            // ディレクトリの権限確認
-            log.info("ディレクトリの権限確認:");
-            log.info("- 読み取り可能: {}", Files.isReadable(uploadPath));
-            log.info("- 書き込み可能: {}", Files.isWritable(uploadPath));
-            log.info("- 実行可能: {}", Files.isExecutable(uploadPath));
-
             // ファイルを保存
             Path filePath = uploadPath.resolve(fileName);
-            log.info("保存先ファイルパス: {}", filePath.toAbsolutePath());
-            
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            log.info("ファイルの保存が完了: {}", filePath.toAbsolutePath());
-            log.info("保存されたファイルサイズ: {} bytes", Files.size(filePath));
-
+            log.info("ファイル保存完了: {}", filePath.toAbsolutePath());
+            
             // パブリックパスを返す
-            String publicPath = this.publicPath + fileName;
-            log.info("パブリックパス: {}", publicPath);
-            return publicPath;
+            String publicUrl = this.publicPath + fileName;
+            log.info("パブリックURL: {}", publicUrl);
+            return publicUrl;
 
         } catch (IOException e) {
-            log.error("=== ファイル保存中にIOエラーが発生 ===");
-            log.error("エラークラス: {}", e.getClass().getSimpleName());
-            log.error("エラーメッセージ: {}", e.getMessage());
-            log.error("詳細スタックトレース: ", e);
-            throw new RuntimeException("ファイルの保存に失敗しました: " + e.getMessage(), e);
-        } catch (Exception e) {
-            log.error("=== ファイル保存中に予期しないエラーが発生 ===");
-            log.error("エラークラス: {}", e.getClass().getSimpleName());
-            log.error("エラーメッセージ: {}", e.getMessage());
-            log.error("詳細スタックトレース: ", e);
-            throw new RuntimeException("ファイルの保存中に予期しないエラーが発生しました: " + e.getMessage(), e);
+            log.error("ファイル保存中にエラーが発生: {}", e.getMessage(), e);
+            throw new RuntimeException("ファイルの保存に失敗しました", e);
         }
     }
 

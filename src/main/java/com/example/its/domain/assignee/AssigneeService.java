@@ -1,12 +1,14 @@
 package com.example.its.domain.assignee;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AssigneeService {
@@ -32,9 +34,23 @@ public class AssigneeService {
      */
     @Transactional
     public AssigneeEntity create(String name, String photoUrl) {
+        log.info("=== AssigneeService.create 開始 ===");
+        log.info("パラメータ: name={}, photoUrl={}", name, photoUrl);
+        
         var assignee = new AssigneeEntity(0, name, photoUrl);
-        assigneeRepository.insert(assignee);
-        return assignee;
+        log.info("作成する担当者エンティティ: {}", assignee);
+        
+        try {
+            log.info("データベースにINSERT実行中...");
+            assigneeRepository.insert(assignee);
+            log.info("INSERT完了後の担当者エンティティ: {}", assignee);
+            log.info("生成されたID: {}", assignee.getId());
+            
+            return assignee;
+        } catch (Exception e) {
+            log.error("データベースINSERT中にエラーが発生", e);
+            throw e;
+        }
     }
 
     /**
