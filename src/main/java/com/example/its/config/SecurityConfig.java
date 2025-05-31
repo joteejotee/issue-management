@@ -34,8 +34,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/", "/home", "/login").permitAll() // ホームページとログインページは誰でもアクセス可能
-                        .requestMatchers("/images/**", "/css/**", "/js/**").permitAll() // 静的リソースは誰でもアクセス可能
+                        // 静的リソースを完全に許可
+                        .requestMatchers("/images/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/webjars/**", "/static/**", "/public/**").permitAll()
+                        // APIエンドポイントを完全に許可
+                        .requestMatchers("/api/**").permitAll()
+                        // 基本ページを許可
+                        .requestMatchers("/", "/home", "/login").permitAll()
                         .anyRequest().authenticated() // その他のリクエストは認証が必要
                 )
                 .formLogin(login -> login
@@ -49,6 +54,9 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
                         .permitAll()
+                )
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**") // APIエンドポイントのCSRF保護を無効
                 )
                 .userDetailsService(customUserDetailsService); // カスタムUserDetailsServiceを使用
         

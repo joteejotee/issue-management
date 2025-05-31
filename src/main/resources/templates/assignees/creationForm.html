@@ -6,6 +6,124 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>担当者追加 - Issue Management</title>
   <link rel="stylesheet" th:href="@{/css/style.css}">
+
+  <!-- Uppy CSS -->
+  <link href="https://releases.transloadit.com/uppy/v3.19.1/uppy.min.css" rel="stylesheet">
+
+  <!-- カスタムスタイル -->
+  <style>
+    /* UppyをDaisyUIと調和させるカスタムスタイル */
+    .uppy-Dashboard-inner {
+      background-color: hsl(var(--b1));
+      border: 2px dashed hsl(var(--bc) / 0.2);
+      border-radius: var(--rounded-box);
+    }
+
+    .uppy-Dashboard-dropFilesHereHint {
+      color: hsl(var(--bc) / 0.7);
+      font-weight: 500;
+    }
+
+    .uppy-DashboardAddFiles-title {
+      color: hsl(var(--bc));
+      font-weight: 600;
+    }
+
+    .uppy-DashboardAddFiles-info {
+      color: hsl(var(--bc) / 0.6);
+    }
+
+    .uppy-Dashboard--isDraggingOver .uppy-Dashboard-inner {
+      border-color: hsl(var(--p));
+      background-color: hsl(var(--p) / 0.1);
+    }
+
+    .uppy-size--height-md .uppy-Dashboard-inner {
+      min-height: 200px;
+    }
+
+    /* ファイルが追加された時の高さ調整 */
+    .uppy-Dashboard-inner.has-files {
+      min-height: 300px !important;
+    }
+
+    /* ファイルプレビューエリアの調整 */
+    .uppy-Dashboard-filesContainer {
+      max-height: none !important;
+    }
+
+    .uppy-Dashboard-files {
+      max-height: none !important;
+    }
+
+    /* 個別ファイルアイテムのスタイル */
+    .uppy-Dashboard-Item {
+      margin-bottom: 10px;
+    }
+
+    /* アップロード完了後も画像を表示 */
+    .uppy-Dashboard-Item--complete .uppy-Dashboard-Item-preview {
+      display: block !important;
+    }
+
+    .uppy-Dashboard-Item--complete {
+      background-color: hsl(var(--su) / 0.1);
+      border-color: hsl(var(--su));
+    }
+
+    /* プログレスバーを完了後は非表示 */
+    .uppy-Dashboard-Item--complete .uppy-Dashboard-Item-progress {
+      display: none;
+    }
+
+    /* ステータスメッセージのスタイル調整 */
+    .uppy-Dashboard-Item--complete .uppy-Dashboard-Item-status {
+      color: hsl(var(--su));
+      font-weight: 600;
+    }
+
+    /* 成功メッセージ */
+    .upload-success {
+      @apply alert alert-success mt-4;
+    }
+
+    /* エラーメッセージ */
+    .upload-error {
+      @apply alert alert-error mt-4;
+    }
+
+    /* アップロード完了後のスタイル改善 */
+    .uppy-StatusBar {
+      background-color: hsl(var(--su));
+      color: hsl(var(--suc));
+      border-radius: var(--rounded-btn);
+    }
+
+    .uppy-StatusBar.is-complete {
+      background-color: hsl(var(--su));
+    }
+
+    /* ファイルプレビューのスタイル */
+    .uppy-Dashboard-Item-preview {
+      border-radius: var(--rounded-btn);
+    }
+
+    .uppy-Dashboard-Item {
+      border-radius: var(--rounded-box);
+      border: 1px solid hsl(var(--b3));
+    }
+
+    .uppy-Dashboard-Item--inProgress {
+      border-color: hsl(var(--p));
+    }
+
+    /* アップロード完了メッセージのスタイル */
+    .uppy-Informer {
+      background-color: hsl(var(--su));
+      color: hsl(var(--suc));
+      border-radius: var(--rounded-btn);
+    }
+  </style>
 </head>
 
 <body class="bg-base-100 min-h-screen">
@@ -42,7 +160,7 @@
     <!-- フォーム -->
     <div class="card bg-base-200 shadow-xl">
       <div class="card-body">
-        <form th:action="@{/assignees}" th:object="${assigneeForm}" method="post">
+        <form th:action="@{/assignees}" th:object="${assigneeForm}" method="post" id="assigneeForm">
           <!-- 担当者名 -->
           <div class="form-control mb-4">
             <label class="label" for="name">
@@ -54,14 +172,24 @@
             </div>
           </div>
 
-          <!-- 写真URL -->
+          <!-- 写真アップロード -->
           <div class="form-control mb-6">
-            <label class="label" for="photoUrl">
-              <span class="label-text font-semibold">写真URL <span class="text-error">*</span></span>
+            <label class="label">
+              <span class="label-text font-semibold">プロフィール写真 <span class="text-error">*</span></span>
             </label>
-            <input type="text" id="photoUrl" th:field="*{photoUrl}" class="input input-bordered w-full" th:classappend="${#fields.hasErrors('photoUrl')} ? 'input-error' : ''" placeholder="/images/avatars/example.png" />
+
+            <!-- ファイルアップロードエリア -->
+            <div id="uppy-drag-drop"></div>
+
+            <!-- 隠しフィールド（アップロードされたファイルパスを保持） -->
+            <input type="hidden" id="photoUrl" th:field="*{photoUrl}" />
+            <input type="hidden" id="uploadedFilePath" name="uploadedFilePath" />
+
+            <!-- アップロード状況メッセージ -->
+            <div id="upload-message" class="mt-4" style="display: none;"></div>
+
             <div class="label">
-              <span class="label-text-alt">例: /images/avatars/isaac-castillejos-VOQkzFIkF0Y-unsplash.png</span>
+              <span class="label-text-alt">JPG、PNG、GIF、WebP形式、最大5MBまで</span>
             </div>
             <div th:if="${#fields.hasErrors('photoUrl')}" class="label">
               <span class="label-text-alt text-error" th:errors="*{photoUrl}">エラーメッセージ</span>
@@ -77,7 +205,7 @@
               <div class="flex items-center space-x-4">
                 <div class="avatar">
                   <div class="w-16 rounded-full">
-                    <img id="preview-image" th:src="${assigneeForm.photoUrl != null && !assigneeForm.photoUrl.isEmpty()} ? ${assigneeForm.photoUrl} : '/images/avatars/default.png'" alt="プレビュー" class="object-cover" onerror="this.src='/images/avatars/default.png'" />
+                    <img id="preview-image" th:src="${assigneeForm.photoUrl != null && !assigneeForm.photoUrl.isEmpty()} ? ${assigneeForm.photoUrl} : '/images/avatars/default.svg'" alt="プレビュー" class="object-cover" onerror="this.src='/images/avatars/default.svg'" />
                   </div>
                 </div>
                 <div>
@@ -91,7 +219,7 @@
           <!-- ボタン -->
           <div class="card-actions justify-end">
             <a th:href="@{/assignees}" class="btn btn-outline">キャンセル</a>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" id="submitBtn">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
@@ -103,25 +231,313 @@
     </div>
   </div>
 
-  <!-- JavaScript for live preview -->
+  <!-- Uppy JavaScript -->
+  <script src="https://releases.transloadit.com/uppy/v3.19.1/uppy.min.js"></script>
+
+  <!-- メインJavaScript -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      // 要素取得
       const nameInput = document.getElementById('name');
       const photoUrlInput = document.getElementById('photoUrl');
+      const uploadedFilePathInput = document.getElementById('uploadedFilePath');
       const previewName = document.getElementById('preview-name');
       const previewImage = document.getElementById('preview-image');
+      const uploadMessage = document.getElementById('upload-message');
+      const submitBtn = document.getElementById('submitBtn');
 
+      // 名前入力のプレビュー更新
       nameInput.addEventListener('input', function () {
         previewName.textContent = this.value || '担当者名';
       });
 
-      photoUrlInput.addEventListener('input', function () {
-        if (this.value) {
-          previewImage.src = this.value;
-        } else {
-          previewImage.src = '/images/avatars/default.png';
+      // Uppyの初期化
+      const uppy = new Uppy.Uppy({
+        autoProceed: false,
+        allowMultipleUploads: false,
+        restrictions: {
+          maxFileSize: 5 * 1024 * 1024, // 5MB
+          maxNumberOfFiles: 1,
+          allowedFileTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+        },
+        locale: {
+          strings: {
+            dropPasteImportFiles: 'ファイルをここにドラッグ＆ドロップするか、%{browseFiles}してください',
+            dropPasteImportFolders: 'ファイルをここにドラッグ＆ドロップするか、%{browseFolders}してください',
+            dropPasteBoth: 'ファイルをここにドラッグ＆ドロップするか、%{browseFiles}または%{browseFolders}してください',
+            browseFiles: 'ファイルを選択',
+            browseFolders: 'フォルダを選択',
+            uploadComplete: 'アップロード完了',
+            uploadPaused: 'アップロード一時停止',
+            resumeUpload: 'アップロード再開',
+            pauseUpload: 'アップロード一時停止',
+            retryUpload: '再試行',
+            cancelUpload: 'キャンセル',
+            xFilesSelected: {
+              0: '%{smart_count} ファイルが選択されました',
+              1: '%{smart_count} ファイルが選択されました'
+            },
+            uploadingXFiles: {
+              0: '%{smart_count} ファイルをアップロード中',
+              1: '%{smart_count} ファイルをアップロード中'
+            }
+          }
+        }
+      })
+        .use(Uppy.Dashboard, {
+          target: '#uppy-drag-drop',
+          inline: true,
+          width: '100%',
+          height: 'auto',
+          showProgressDetails: true,
+          proudlyDisplayPoweredByUppy: false,
+          hideAfterFinish: false,
+          closeAfterFinish: false,
+          showRemoveButtonAfterComplete: true,
+          showSelectedFiles: true,
+          note: 'プロフィール写真をアップロードしてください（JPG、PNG、GIF、WebP、最大5MB）'
+        })
+        .use(Uppy.XHRUpload, {
+          endpoint: '/api/files/upload/avatar',
+          fieldName: 'file',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+
+      // ダッシュボード要素への参照を取得
+      const dashboardElement = document.querySelector('#uppy-drag-drop');
+
+      // ダッシュボードの高さを動的に調整する関数
+      function adjustDashboardHeight(hasFiles = false) {
+        const dashboardInner = document.querySelector('.uppy-Dashboard-inner');
+        if (dashboardInner) {
+          if (hasFiles) {
+            dashboardInner.classList.add('has-files');
+            dashboardInner.style.minHeight = '350px';
+          } else {
+            dashboardInner.classList.remove('has-files');
+            dashboardInner.style.minHeight = '200px';
+          }
+        }
+      }
+
+      // アップロード成功時の処理
+      uppy.on('upload-success', (file, response) => {
+        console.log('アップロード成功:', response);
+        if (response.body && response.body.success) {
+          const filePath = response.body.filePath;
+          console.log('サーバーから返されたファイルパス:', filePath);
+
+          // 隠しフィールドに値を設定
+          photoUrlInput.value = filePath;
+          uploadedFilePathInput.value = filePath;
+
+          // プレビュー画像を更新（既存のローカルプレビューを維持しつつ、サーバーパスも設定）
+          // まず現在の画像ソースをログ出力
+          console.log('現在のプレビュー画像ソース:', previewImage.src);
+
+          // ローカルプレビューが既に表示されている場合はそれを維持
+          // サーバーパスは念のため設定するが、表示は現在のものを維持
+          if (previewImage.src && !previewImage.src.includes('default.svg')) {
+            console.log('ローカルプレビューを維持します');
+            // 隠しフィールドの値だけ更新して、表示は変更しない
+          } else {
+            // フォールバック：サーバーパスで更新
+            console.log('サーバーパスでプレビューを更新します');
+            previewImage.src = filePath;
+            previewImage.onerror = function () {
+              console.error('サーバー画像の読み込みに失敗:', filePath);
+              // エラーの場合はローカルプレビューに戻すか、デフォルト画像を使用
+              this.src = '/images/avatars/default.svg';
+            };
+          }
+
+          // 成功メッセージを表示
+          showMessage('success', 'ファイルのアップロードが完了しました！');
+
+          // Uppyの情報メッセージを3秒後に非表示にする
+          setTimeout(() => {
+            const informer = document.querySelector('.uppy-Informer');
+            if (informer) {
+              informer.style.display = 'none';
+            }
+          }, 3000);
+
+          console.log('アップロード完了。ファイルパス:', filePath);
         }
       });
+
+      // 完了イベントの処理を追加
+      uppy.on('complete', (result) => {
+        console.log('アップロード処理完了:', result);
+        console.log('完了時のプレビュー画像ソース:', previewImage.src);
+
+        // 成功したファイルがある場合の追加処理
+        if (result.successful && result.successful.length > 0) {
+          // ダッシュボードの高さを維持
+          adjustDashboardHeight(true);
+
+          // プレビュー画像が消えていないかチェック
+          if (previewImage.src && previewImage.src.includes('default.svg')) {
+            console.warn('プレビュー画像がデフォルトに戻っています。復元を試行します。');
+            // ローカルストレージや他の方法で画像を復元する処理をここに追加
+            // 現在は警告のみ
+          }
+
+          // 完了状態のスタイルを確実に適用
+          setTimeout(() => {
+            const completedItems = document.querySelectorAll('.uppy-Dashboard-Item--complete');
+            completedItems.forEach(item => {
+              const preview = item.querySelector('.uppy-Dashboard-Item-preview');
+              if (preview) {
+                preview.style.display = 'block';
+              }
+            });
+
+            // Uppyのinformerメッセージを非表示
+            const informer = document.querySelector('.uppy-Informer');
+            if (informer) {
+              informer.style.display = 'none';
+            }
+          }, 2000);
+        }
+      });
+
+      // アップロードエラー時の処理
+      uppy.on('upload-error', (file, error, response) => {
+        console.error('アップロードエラー:', error, response);
+        let errorMessage = 'アップロード中にエラーが発生しました。';
+
+        if (response && response.body && response.body.message) {
+          errorMessage = response.body.message;
+        }
+
+        showMessage('error', errorMessage);
+      });
+
+      // ファイル追加時の処理
+      uppy.on('file-added', (file) => {
+        console.log('ファイルが追加されました:', file.name);
+        console.log('ファイル情報:', file);
+
+        // ダッシュボードの高さを調整
+        adjustDashboardHeight(true);
+
+        // プレビュー画像を一時的に更新（ローカルプレビュー）
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          console.log('FileReader完了、プレビュー更新中...');
+          previewImage.src = e.target.result;
+          previewImage.onload = function () {
+            console.log('プレビュー画像が正常に読み込まれました');
+          };
+          previewImage.onerror = function () {
+            console.error('プレビュー画像の読み込みに失敗しました');
+            this.src = '/images/avatars/default.svg';
+          };
+        };
+
+        reader.onerror = function () {
+          console.error('FileReaderでエラーが発生しました');
+          // フォールバック：Uppyが提供するプレビューURLを使用
+          if (file.preview) {
+            console.log('フォールバック：Uppyプレビューを使用');
+            previewImage.src = file.preview;
+          }
+        };
+
+        // ファイルオブジェクトから直接読み込み
+        if (file.data instanceof File) {
+          console.log('FileReaderでファイルを読み込み中...');
+          reader.readAsDataURL(file.data);
+        } else if (file.preview) {
+          // フォールバック：Uppyが提供するプレビューURLを使用
+          console.log('Uppyプレビューを直接使用');
+          previewImage.src = file.preview;
+        } else {
+          console.warn('プレビュー用のデータが見つかりません');
+        }
+
+        // メッセージをクリア
+        hideMessage();
+      });
+
+      // ファイル削除時の処理
+      uppy.on('file-removed', (file) => {
+        console.log('ファイルが削除されました:', file.name);
+
+        // ダッシュボードの高さを元に戻す
+        adjustDashboardHeight(false);
+
+        // フィールドをクリア
+        photoUrlInput.value = '';
+        uploadedFilePathInput.value = '';
+
+        // プレビューをデフォルトに戻す
+        previewImage.src = '/images/avatars/default.svg';
+
+        // メッセージをクリア
+        hideMessage();
+      });
+
+      // 制限エラー時の処理
+      uppy.on('restriction-failed', (file, error) => {
+        console.error('制限エラー:', error);
+        let errorMessage = 'ファイルの制限に違反しています。';
+
+        if (error.message) {
+          if (error.message.includes('size')) {
+            errorMessage = 'ファイルサイズが大きすぎます。5MB以下のファイルを選択してください。';
+          } else if (error.message.includes('type')) {
+            errorMessage = 'サポートされていないファイル形式です。JPG、PNG、GIF、WebP形式のファイルを選択してください。';
+          }
+        }
+
+        showMessage('error', errorMessage);
+      });
+
+      // Uppyの初期化完了後の追加設定
+      uppy.on('dashboard:installed', () => {
+        console.log('Uppyダッシュボードが初期化されました');
+
+        // 初期状態でのダッシュボード調整
+        setTimeout(() => {
+          adjustDashboardHeight(false);
+        }, 100);
+      });
+
+      // フォーム送信時のバリデーション
+      document.getElementById('assigneeForm').addEventListener('submit', function (e) {
+        // 写真がアップロードされているかチェック
+        if (!photoUrlInput.value.trim()) {
+          e.preventDefault();
+          showMessage('error', 'プロフィール写真をアップロードしてください。');
+          return false;
+        }
+      });
+
+      // メッセージ表示関数
+      function showMessage(type, message) {
+        uploadMessage.className = type === 'success' ? 'alert alert-success mt-4' : 'alert alert-error mt-4';
+        uploadMessage.innerHTML = `
+          <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24">
+              ${type === 'success'
+            ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'
+            : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />'
+          }
+            </svg>
+            <span>${message}</span>
+          </div>
+        `;
+        uploadMessage.style.display = 'block';
+      }
+
+      // メッセージ非表示関数
+      function hideMessage() {
+        uploadMessage.style.display = 'none';
+      }
     });
   </script>
 </body>
