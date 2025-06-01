@@ -32,8 +32,8 @@ title: "プロジェクト共通ルール"
 - 入力ファイル: `src/input.css`
 - 出力ファイル: `src/main/resources/static/css/style.css`
 
-## フォント
+## フォント管理
 
-- Inter フォント（英語）
-- Noto Sans JP フォント（日本語）
-- フォントファイルは `/fonts/` ディレクトリに配置
+- Inter（英語）、Noto Sans JP（日本語）は**CDNを使わず**、`/fonts/` ディレクトリに**ローカルファイルとしてセルフホスト**しています。
+- `@font-face` により `src/main/resources/static/css/style.css` から利用。
+
