@@ -36,3 +36,19 @@ out/
 ### VS Code ###
 .vscode/
 node_modules/
+
+# Tailwind CSS ビルド成果物（必要に応じて）
+# src/main/resources/static/css/style.css
+
+# VS Code 設定（個人設定は除外）
+.vscode/settings.local.json
+
+# npm ログ
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# OS 固有のファイル
+.DS_Store
+Thumbs.db
