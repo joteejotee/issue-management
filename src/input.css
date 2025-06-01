@@ -97,6 +97,23 @@
   animation: float 3s ease-in-out infinite;
 }
 
+/* 三角アイコンの右誘導アニメーション */
+@keyframes arrow-bounce {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+/* ホバー時のアニメーション適用 */
+.list-row:hover .next-button svg,
+.list-row:hover .previous-button svg {
+  animation: arrow-bounce 0.8s ease-in-out infinite;
+}
+
 /* line-clamp-2 ユーティリティクラス */
 @layer utilities {
   .line-clamp-2 {
