@@ -67,7 +67,7 @@
                   <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}" th:text="${assignee.name}">担当者名</div>
                 </div>
                 <div th:if="${issue.assigneeId == null}">担当者未定</div>
-                <div class="text-xs uppercase font-semibold opacity-60 line-clamp-2" th:text="${issue.summary}">課題のタイトル</div>
+                <a th:href="@{/issues/{id}(id=${issue.id})}" class="text-xs uppercase font-semibold opacity-60 line-clamp-2 hover:opacity-80 hover:text-primary transition-all duration-200 cursor-pointer" th:text="${issue.summary}">課題のタイトル</a>
               </div>
               <p class="list-col-wrap text-xs line-clamp-2" th:text="${issue.description}">
                 課題の詳細説明テキストがここに入ります。この部分は2行まで表示され、それ以上の場合は省略記号で表示されます。
@@ -103,7 +103,7 @@
             </li>
 
             <!-- DOING課題カード -->
-            <li th:each="issue : ${doingIssues}" class="list-row hover:scale-105 transition-transform duration-200 ease-in-out">
+            <li th:each="issue : ${doingIssues}" class="list-row hover:scale-103 transition-transform duration-200 ease-in-out">
               <!-- 担当者情報の表示 -->
               <div th:if="${issue.assigneeId != null}" class="avatar-large-radius">
                 <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}">
@@ -119,7 +119,7 @@
                   <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}" th:text="${assignee.name}">担当者名</div>
                 </div>
                 <div th:if="${issue.assigneeId == null}">担当者未定</div>
-                <div class="text-xs uppercase font-semibold opacity-60 line-clamp-2" th:text="${issue.summary}">課題のタイトル</div>
+                <a th:href="@{/issues/{id}(id=${issue.id})}" class="text-xs uppercase font-semibold opacity-60 line-clamp-2 hover:opacity-80 hover:text-primary transition-all duration-200 cursor-pointer" th:text="${issue.summary}">課題のタイトル</a>
               </div>
               <p class="list-col-wrap text-xs line-clamp-2" th:text="${issue.description}">
                 課題の詳細説明テキストがここに入ります。この部分は2行まで表示され、それ以上の場合は省略記号で表示されます。
@@ -158,7 +158,7 @@
           </li>
 
           <!-- DONE課題カード -->
-          <li th:each="issue : ${doneIssues}" class="list-row opacity-75 hover:scale-105 transition-transform duration-200 ease-in-out">
+          <li th:each="issue : ${doneIssues}" class="list-row">
             <!-- 担当者情報の表示 -->
             <div th:if="${issue.assigneeId != null}" class="avatar-large-radius">
               <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}">
@@ -174,7 +174,7 @@
                 <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}" th:text="${assignee.name}">担当者名</div>
               </div>
               <div th:if="${issue.assigneeId == null}">担当者未定</div>
-              <div class="text-xs uppercase font-semibold opacity-60 line-clamp-2" th:text="${issue.summary}">完了した課題のタイトル</div>
+              <a th:href="@{/issues/{id}(id=${issue.id})}" class="text-xs uppercase font-semibold opacity-60 line-clamp-2 hover:opacity-80 hover:text-primary transition-all duration-200 cursor-pointer" th:text="${issue.summary}">完了した課題のタイトル</a>
             </div>
             <p class="list-col-wrap text-xs line-clamp-2" th:text="${issue.description}">
               完了した課題の詳細説明テキストがここに入ります。この部分は2行まで表示され、それ以上の場合は省略記号で表示されます。

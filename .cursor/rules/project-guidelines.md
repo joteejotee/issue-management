@@ -12,14 +12,15 @@ title: "プロジェクト共通ルール"
 
 - **バージョン**: v4.1.8 を使用
 - Tailwind CSS v4 を使用（内蔵コンパイラ採用）
-- 設定ファイル（`tailwind.config.js`）は不要
-- PostCSS 設定も不要（v4 では内蔵されている）
-- 設定は `src/input.css` で直接管理
+- 設定は `src/input.css` で直接管理（`tailwind.config.js` は不要）
+- PostCSS 設定は不要（v4 では内蔵されている）
 
 ## DaisyUI
 
 - **バージョン**: v5.0.42 を使用
-- テーマ設定は `src/input.css` の `@plugin "daisyui"` で管理
+- Tailwind CSS v4 対応の正式バージョン
+- プラグイン設定は `src/input.css` 内の `@plugin "daisyui"` で管理（公式確認済み）
+- テーマ設定は `src/input.css` で行う（必要に応じて）
 
 # 開発ガイドライン
 
