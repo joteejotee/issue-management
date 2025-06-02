@@ -324,30 +324,22 @@
 
       // アップロード成功時の処理
       uppy.on('upload-success', (file, response) => {
-        console.log('アップロード成功:', response);
         if (response.body && response.body.success) {
           const filePath = response.body.filePath;
-          console.log('サーバーから返されたファイルパス:', filePath);
 
           // 隠しフィールドに値を設定
           photoUrlInput.value = filePath;
           uploadedFilePathInput.value = filePath;
 
           // プレビュー画像を更新（既存のローカルプレビューを維持しつつ、サーバーパスも設定）
-          // まず現在の画像ソースをログ出力
-          console.log('現在のプレビュー画像ソース:', previewImage.src);
-
           // ローカルプレビューが既に表示されている場合はそれを維持
           // サーバーパスは念のため設定するが、表示は現在のものを維持
           if (previewImage.src && !previewImage.src.includes('default.svg')) {
-            console.log('ローカルプレビューを維持します');
             // 隠しフィールドの値だけ更新して、表示は変更しない
           } else {
             // フォールバック：サーバーパスで更新
-            console.log('サーバーパスでプレビューを更新します');
             previewImage.src = filePath;
             previewImage.onerror = function () {
-              console.error('サーバー画像の読み込みに失敗:', filePath);
               // エラーの場合はローカルプレビューに戻すか、デフォルト画像を使用
               this.src = '/images/avatars/default.svg';
             };
@@ -363,16 +355,11 @@
               informer.style.display = 'none';
             }
           }, 3000);
-
-          console.log('アップロード完了。ファイルパス:', filePath);
         }
       });
 
       // 完了イベントの処理を追加
       uppy.on('complete', (result) => {
-        console.log('アップロード処理完了:', result);
-        console.log('完了時のプレビュー画像ソース:', previewImage.src);
-
         // 成功したファイルがある場合の追加処理
         if (result.successful && result.successful.length > 0) {
           // ダッシュボードの高さを維持
@@ -380,7 +367,6 @@
 
           // プレビュー画像が消えていないかチェック
           if (previewImage.src && previewImage.src.includes('default.svg')) {
-            console.warn('プレビュー画像がデフォルトに戻っています。復元を試行します。');
             // ローカルストレージや他の方法で画像を復元する処理をここに追加
             // 現在は警告のみ
           }
@@ -406,7 +392,6 @@
 
       // アップロードエラー時の処理
       uppy.on('upload-error', (file, error, response) => {
-        console.error('アップロードエラー:', error, response);
         let errorMessage = 'アップロード中にエラーが発生しました。';
 
         if (response && response.body && response.body.message) {
@@ -418,45 +403,34 @@
 
       // ファイル追加時の処理
       uppy.on('file-added', (file) => {
-        console.log('ファイルが追加されました:', file.name);
-        console.log('ファイル情報:', file);
-
         // ダッシュボードの高さを調整
         adjustDashboardHeight(true);
 
         // プレビュー画像を一時的に更新（ローカルプレビュー）
         const reader = new FileReader();
         reader.onload = function (e) {
-          console.log('FileReader完了、プレビュー更新中...');
           previewImage.src = e.target.result;
           previewImage.onload = function () {
-            console.log('プレビュー画像が正常に読み込まれました');
+            // 画像読み込み成功
           };
           previewImage.onerror = function () {
-            console.error('プレビュー画像の読み込みに失敗しました');
             this.src = '/images/avatars/default.svg';
           };
         };
 
         reader.onerror = function () {
-          console.error('FileReaderでエラーが発生しました');
           // フォールバック：Uppyが提供するプレビューURLを使用
           if (file.preview) {
-            console.log('フォールバック：Uppyプレビューを使用');
             previewImage.src = file.preview;
           }
         };
 
         // ファイルオブジェクトから直接読み込み
         if (file.data instanceof File) {
-          console.log('FileReaderでファイルを読み込み中...');
           reader.readAsDataURL(file.data);
         } else if (file.preview) {
           // フォールバック：Uppyが提供するプレビューURLを使用
-          console.log('Uppyプレビューを直接使用');
           previewImage.src = file.preview;
-        } else {
-          console.warn('プレビュー用のデータが見つかりません');
         }
 
         // メッセージをクリア
@@ -465,8 +439,6 @@
 
       // ファイル削除時の処理
       uppy.on('file-removed', (file) => {
-        console.log('ファイルが削除されました:', file.name);
-
         // ダッシュボードの高さを元に戻す
         adjustDashboardHeight(false);
 
@@ -483,7 +455,6 @@
 
       // 制限エラー時の処理
       uppy.on('restriction-failed', (file, error) => {
-        console.error('制限エラー:', error);
         let errorMessage = 'ファイルの制限に違反しています。';
 
         if (error.message) {
@@ -499,8 +470,6 @@
 
       // Uppyの初期化完了後の追加設定
       uppy.on('dashboard:installed', () => {
-        console.log('Uppyダッシュボードが初期化されました');
-
         // 初期状態でのダッシュボード調整
         setTimeout(() => {
           adjustDashboardHeight(false);

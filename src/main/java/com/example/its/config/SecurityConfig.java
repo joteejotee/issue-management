@@ -20,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 //HTTPセキュリティのフィルターチェーンを設定するクラス
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 //@Configurationは、Springの設定クラスであると示す。@Ena～はspring securityを有効化する
 @Configuration
@@ -32,37 +34,22 @@ public class SecurityConfig {
     //メソッドがBean（オブジェクト）を生成することを示す
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        return http
                 .authorizeHttpRequests(authz -> authz
-                        // 静的リソースを完全に許可
-                        .requestMatchers("/images/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
-                        .requestMatchers("/webjars/**", "/static/**", "/public/**").permitAll()
-                        // アップロードファイルへのアクセスを許可
-                        .requestMatchers("/uploads/**").permitAll()
-                        // APIエンドポイントを完全に許可
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/files/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
-                        // 基本ページを許可
-                        .requestMatchers("/", "/home", "/login").permitAll()
-                        .anyRequest().authenticated() // その他のリクエストは認証が必要
+                        .anyRequest().authenticated()
                 )
-                .formLogin(login -> login
-                        .loginPage("/login") // カスタムログインページ
-                        .loginProcessingUrl("/perform_login") // ログイン処理URL
-                        .defaultSuccessUrl("/issues", true) // ログイン成功時のリダイレクト先
-                        .failureUrl("/login?error=true") // ログイン失敗時のリダイレクト先
+                .formLogin(form -> form
+                        .loginPage("/login")
                         .permitAll()
+                        .defaultSuccessUrl("/issues", true)
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
                         .permitAll()
+                        .logoutSuccessUrl("/login")
                 )
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**") // APIエンドポイントのCSRF保護を無効
-                )
-                .userDetailsService(customUserDetailsService); // カスタムUserDetailsServiceを使用
-        
-        return http.build();
+                .build();
     }
 
     @Bean

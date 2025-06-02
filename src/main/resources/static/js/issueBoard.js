@@ -1,7 +1,5 @@
 // 課題ボードのJavaScript
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Issue Board JavaScript loaded");
-
   // CSRFトークンを取得
   const csrfToken = document
     .querySelector('meta[name="_csrf"]')

@@ -231,7 +231,6 @@
 
       // アップロード成功時の処理
       uppy.on('upload-success', (file, response) => {
-        console.log('アップロード成功:', response);
         if (response.body && response.body.success) {
           const filePath = response.body.filePath;
 
@@ -244,14 +243,11 @@
 
           // 成功メッセージを表示
           showMessage('success', 'ファイルのアップロードが完了しました！');
-
-          console.log('アップロード完了。ファイルパス:', filePath);
         }
       });
 
       // アップロードエラー時の処理
       uppy.on('upload-error', (file, error, response) => {
-        console.error('アップロードエラー:', error, response);
         let errorMessage = 'アップロード中にエラーが発生しました。';
 
         if (response && response.body && response.body.message) {
@@ -263,8 +259,6 @@
 
       // ファイル追加時の処理
       uppy.on('file-added', (file) => {
-        console.log('ファイルが追加されました:', file.name);
-
         // プレビュー画像を一時的に更新
         if (file.preview) {
           previewImage.src = file.preview;
@@ -273,8 +267,6 @@
 
       // ファイル削除時の処理
       uppy.on('file-removed', (file) => {
-        console.log('ファイルが削除されました:', file.name);
-
         // 編集フォームの場合は元の画像に戻す（既存の値をキープ）
         const originalPhotoUrl = photoUrlInput.getAttribute('data-original') || '/images/avatars/default.svg';
 
@@ -291,7 +283,6 @@
 
       // 制限エラー時の処理
       uppy.on('restriction-failed', (file, error) => {
-        console.error('制限エラー:', error);
         let errorMessage = 'ファイルの制限に違反しています。';
 
         if (error.message) {

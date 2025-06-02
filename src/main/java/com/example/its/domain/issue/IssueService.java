@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -11,81 +13,59 @@ public class IssueService {
 
     private final IssueRepository issueRepository;
 
-    // TODO状態の課題を取得
-    @Transactional
-    public List<IssueEntity> findAllTodoIssues() {
-        return issueRepository.findAllTodoIssues();
+    public List<Issue> findTodoIssues() {
+        return issueRepository.findTodoIssues();
     }
 
-    // DOING状態の課題を取得
-    @Transactional
-    public List<IssueEntity> findAllDoingIssues() {
-        return issueRepository.findAllDoingIssues();
+    public List<Issue> findDoingIssues() {
+        return issueRepository.findDoingIssues();
     }
 
-    // DONE状態の課題を取得
-    @Transactional
-    public List<IssueEntity> findAllDoneIssues() {
-        return issueRepository.findAllDoneIssues();
+    public List<Issue> findDoneIssues() {
+        return issueRepository.findDoneIssues();
     }
 
-    // 未完了の課題をリポジトリから全て取得して返す
-    @Transactional
-    public List<IssueEntity> findAllIncompleteIssues() {
-        return issueRepository.findAllIncompleteIssues();
+    public List<Issue> findIncompleteIssues() {
+        var todoIssues = issueRepository.findTodoIssues();
+        var doingIssues = issueRepository.findDoingIssues();
+        return Stream.concat(todoIssues.stream(), doingIssues.stream())
+                .collect(Collectors.toList());
     }
 
-    // 完了した課題をリポジトリから全て取得して返す
-    @Transactional
-    public List<IssueEntity> findAllCompletedIssues() {
-        return issueRepository.findAllCompletedIssues();
+    public List<Issue> findCompletedIssues() {
+        return issueRepository.findDoneIssues();
     }
 
-    // 課題のステータスを次の段階に進める
-    @Transactional
-    public void moveToNextStatus(Long id) {
-        issueRepository.moveToNextStatus(id);
+    public void moveToNextStatus(long issueId) {
+        issueRepository.updateToNextStatus(issueId);
     }
 
-    // 課題のステータスを前の段階に戻す
-    @Transactional
-    public void moveToPreviousStatus(Long id) {
-        issueRepository.moveToPreviousStatus(id);
+    public void moveToPreviousStatus(long issueId) {
+        issueRepository.updateToPreviousStatus(issueId);
     }
 
-    // 課題のステータスを完了状態に更新する
-    @Transactional
-    public void completeIssue(Long id) {
-        // 既存の動作を維持：完了状態をトグル
-        IssueEntity issue = issueRepository.findById(id);
-        if (issue.getStatus() == IssueStatus.DONE) {
-            // 完了 → TODO に戻す
-            issueRepository.moveToPreviousStatus(id);
-            issueRepository.moveToPreviousStatus(id); // DOING → TODO
-        } else {
-            // TODO/DOING → DONE に進める
-            while (issueRepository.findById(id).getStatus() != IssueStatus.DONE) {
-                issueRepository.moveToNextStatus(id);
-            }
-        }
+    public void completeIssue(long issueId) {
+        issueRepository.updateToComplete(issueId);
     }
 
-    // リポジトリから指定されたIDの課題を取得して返す(既存のメソッドをそのまま保持)
-    @Transactional
-    public IssueEntity findById(Long id) {
-        return issueRepository.findById(id);
+    public void undoIssue(long issueId) {
+        issueRepository.updateToIncomplete(issueId);
     }
 
-    // 新しい課題をDBに挿入する
-    @Transactional
-    public void insert(String summary, String description) {
-        issueRepository.insert(summary, description);
+    public Issue findById(long issueId) {
+        return issueRepository.findById(issueId).orElse(null);
     }
 
-    // 担当者付きで新しい課題をDBに挿入する
     @Transactional
-    public void insertWithAssignee(String summary, String description, Long assigneeId) {
-        issueRepository.insertWithAssignee(summary, description, assigneeId);
+    public void create(String summary, String description) {
+        issueRepository.insert(new Issue(null, summary, description, IssueStatus.TODO, null));
+    }
+
+    @Transactional
+    public void createWithAssignee(String summary, String description, Long assigneeId) {
+        var assignee = assigneeId != null ? new Assignee(assigneeId, null, null) : null;
+        var issue = new Issue(null, summary, description, IssueStatus.TODO, assignee);
+        issueRepository.insert(issue);
     }
 
     // 課題の担当者を更新する
