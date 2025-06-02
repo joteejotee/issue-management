@@ -3,11 +3,14 @@ package com.example.its.web.issue;
 import com.example.its.domain.assignee.AssigneeService;
 import com.example.its.domain.issue.IssueService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Controller
 @RequestMapping("/issues")
 @RequiredArgsConstructor //finalが付いたフィールドを引数とするコンストラクタを自動生成するアノテーション
@@ -33,7 +36,7 @@ public class IssueController {
 
     // 課題作成フォームを表示する
     @GetMapping("/creationForm")
-    public String showCreationForm(@ModelAttribute IssueForm form, Model model) {
+    public String showCreationForm(@ModelAttribute("issueForm") IssueForm form, Model model) {
         var assignees = assigneeService.findAll();
         model.addAttribute("assignees", assignees);
         return "issues/creationForm";
@@ -44,7 +47,7 @@ public class IssueController {
     public String show(@PathVariable("issueId") long issueId, Model model) {
         var issue = issueService.findById(issueId);
         model.addAttribute("issue", issue);
-        return "issues/show";
+        return "issues/detail";
     }
 
     // 課題のステータスを次の段階に進める
@@ -70,14 +73,34 @@ public class IssueController {
 
     // フォームから受け取った課題を作成し、データベースに保存する(既存のメソッドをそのまま保持)
     @PostMapping
-    public String create(@Validated IssueForm form, BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
-            var assignees = assigneeService.findAll();
-            model.addAttribute("assignees", assignees);
-            return "issues/creationForm";
+    public String create(@Validated @ModelAttribute("issueForm") IssueForm form, BindingResult bindingResult, Model model) {
+        System.out.println("=== createメソッド開始 - コントローラーに到達しました ===");
+        log.error("=== createメソッド開始 - コントローラーに到達しました ===");
+        try {
+            log.info("=== 課題作成処理開始 ===");
+            log.info("フォームデータ: summary={}, description={}, assigneeId={}", 
+                    form.getSummary(), form.getDescription(), form.getAssigneeId());
+            
+            if (bindingResult.hasErrors()) {
+                log.warn("バリデーションエラーが発生しました: {}", bindingResult.getAllErrors());
+                var assignees = assigneeService.findAll();
+                model.addAttribute("assignees", assignees);
+                return "issues/creationForm";
+            }
+            
+            log.info("課題作成サービス呼び出し開始");
+            issueService.createWithAssignee(form.getSummary(), form.getDescription(), form.getAssigneeId());
+            log.info("課題作成サービス呼び出し完了");
+            
+            log.info("=== 課題作成処理完了 ===");
+            return "redirect:/issues";
+        } catch (Exception e) {
+            log.error("=== 課題作成処理でエラーが発生しました ===");
+            log.error("エラークラス: {}", e.getClass().getSimpleName());
+            log.error("エラーメッセージ: {}", e.getMessage());
+            log.error("スタックトレース: ", e);
+            throw e; // 元の例外を再スロー
         }
-        issueService.createWithAssignee(form.getSummary(), form.getDescription(), form.getAssigneeId());
-        return "redirect:/issues";
     }
 
     // 指定されたIDの課題を削除する

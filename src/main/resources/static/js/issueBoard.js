@@ -1,9 +1,7 @@
 // 課題ボードのJavaScript
 document.addEventListener("DOMContentLoaded", function () {
   // CSRFトークンを取得
-  const csrfToken = document
-    .querySelector('meta[name="_csrf"]')
-    .getAttribute("content");
+  const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");
 
   // 次のステータスに進めるボタン
   const nextButtons = document.querySelectorAll(".next-button");

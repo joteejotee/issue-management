@@ -26,13 +26,16 @@ public class FileUploadController {
      * @return アップロード結果（ファイルパスとメタデータ）
      */
     @PostMapping("/upload/avatar")
-    public ResponseEntity<Map<String, Object>> uploadAvatar(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Map<String, Object>> uploadAvatar(
+            @RequestParam("file") MultipartFile file,
+            @RequestHeader(value = "X-CSRF-TOKEN", required = false) String csrfToken) {
         try {
             log.info("=== アバター画像アップロード開始 ===");
             log.info("ファイル名: {}", file.getOriginalFilename());
             log.info("コンテンツタイプ: {}", file.getContentType());
             log.info("ファイルサイズ: {} bytes", file.getSize());
             log.info("ファイルが空か: {}", file.isEmpty());
+            log.info("CSRFトークン受信: {}", csrfToken != null ? "あり" : "なし");
 
             // ファイルアップロード処理
             String filePath = fileUploadService.uploadAvatarImage(file);

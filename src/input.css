@@ -134,4 +134,10 @@
   .avatar-large-radius img {
     border-radius: var(--radius-avatar-large) !important;
   }
+
+  /* DaisyUI list-row のパディングをカスタマイズ（具体度を上げて確実に適用） */
+  ul.list li.list-row {
+    padding-left: 1.5rem !important; /* 24px */
+    padding-right: 1.5rem !important; /* 24px */
+  }
 }

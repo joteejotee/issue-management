@@ -1,0 +1,72 @@
+# ビルド成果物・自動生成ファイル
+build/
+.gradle/
+node_modules/
+src/main/resources/static/css/style.css
+
+# Gradle 関連
+gradlew
+gradlew.bat
+gradle/
+
+# Git 関連
+.git/
+.gitignore
+.gitattributes
+
+# IDE 設定
+.vscode/
+.cursor/
+.idea/
+
+# OS ファイル
+.DS_Store
+Thumbs.db
+
+# Cookie テストファイル（一時ファイル）
+cookies*.txt
+
+# Docker 関連
+Dockerfile
+.dockerignore
+
+# エラーファイル（一時ファイル）
+error_response.html
+
+# 設定ファイル（形式を保持したい）
+package-lock.json
+compose.yaml
+settings.gradle
+build.gradle
+
+# Prettier 自体の設定
+.prettierrc
+.prettierignore
+
+# ドキュメントファイル（特定の形式を保持）
+.cursor/rules/project-guidelines.md
+.vscode/README.md
+README.md
+
+# Java ソースファイル（Prettierは対応していない）
+**/*.java
+
+# バイナリファイル・フォント・画像
+**/*.woff2
+**/*.woff
+**/*.ttf
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.webp
+**/*.gif
+**/*.svg
+**/*.ico
+
+# データベース関連
+**/*.sql
+**/*.properties
+
+# その他のファイル形式
+**/*.jar
+**/*.class 

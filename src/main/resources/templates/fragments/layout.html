@@ -1,42 +1,44 @@
-<!DOCTYPE html>
+<!doctype html>
 <!-- 【fragment定義】titleとcontentをパラメータで受け取る -->
 <!--suppress JSUnresolvedLibraryURL -->
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <!-- CSRFトークンを設定 -->
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <!-- CSRFトークンのヘッダー名を設定 -->
+    <!-- 【fragmentインクルード】上にあるfragmentで受け取ったパラメータで置換する -->
+    <title th:replace="${title}">(default title)</title>
+    <link rel="icon" type="image/svg+xml" href="/images/Task-cuate.svg" />
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="_csrf" th:content="${_csrf.token}" /> <!-- CSRFトークンを設定 -->
-  <meta name="_csrf_header" th:content="${_csrf.headerName}" /> <!-- CSRFトークンのヘッダー名を設定 -->
-  <!-- 【fragmentインクルード】上にあるfragmentで受け取ったパラメータで置換する -->
-  <title th:replace="${title}">(default title)</title>
-  <link rel="icon" type="image/svg+xml" href="/images/Task-cuate.svg">
+    <!-- ローカルビルドしたTailwind CSS + daisyUI (キャッシュバスター付き) -->
+    <link
+      rel="stylesheet"
+      th:href="@{/css/style.css(v=${#dates.format(#dates.createNow(), 'yyyyMMddHHmmss')})}"
+    />
+    <style>
+      /* カスタムアニメーション */
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
 
-  <!-- ローカルビルドしたTailwind CSS + daisyUI -->
-  <link rel="stylesheet" href="/css/style.css">
-  <style>
-    /* カスタムアニメーション */
-    @keyframes float {
-
-      0%,
-      100% {
-        transform: translateY(0px);
+        50% {
+          transform: translateY(-10px);
+        }
       }
 
-      50% {
-        transform: translateY(-10px);
+      .float-animation {
+        animation: float 3s ease-in-out infinite;
       }
-    }
+    </style>
+  </head>
 
-    .float-animation {
-      animation: float 3s ease-in-out infinite;
-    }
-  </style>
-</head>
-
-<body>
-  <!-- 【fragmentインクルード】上にあるfragmentで受け取ったパラメータを挿入する -->
-  <div th:insert="${content}"></div>
-</body>
-
+  <body>
+    <!-- 【fragmentインクルード】上にあるfragmentで受け取ったパラメータを挿入する -->
+    <div th:insert="${content}"></div>
+  </body>
 </html>

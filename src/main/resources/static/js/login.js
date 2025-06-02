@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 入力フィールドのフォーカス時にエラーをクリア
   const inputs = document.querySelectorAll("#username, #password");
-  inputs.forEach((input) => {
+  inputs.forEach(input => {
     input.addEventListener("focus", function () {
       const errorDiv = document.getElementById("client-error");
       errorDiv.classList.add("hidden");

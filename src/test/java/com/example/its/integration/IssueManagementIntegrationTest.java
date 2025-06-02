@@ -35,9 +35,15 @@ class IssueManagementIntegrationTest extends AbstractIntegrationTest {
     private AssigneeRepository assigneeRepository;
     
     @BeforeEach
+    @Rollback
     void setUp() {
-        issueRepository.deleteAll();
-        assigneeRepository.deleteAll();
+        // データをクリア（外部キー制約により課題を先に削除）
+        issueRepository.findAllTodoIssues().forEach(issue -> issueRepository.delete(issue.getId()));
+        issueRepository.findAllDoingIssues().forEach(issue -> issueRepository.delete(issue.getId()));
+        issueRepository.findAllDoneIssues().forEach(issue -> issueRepository.delete(issue.getId()));
+        
+        // 担当者データもクリア
+        assigneeRepository.findAll().forEach(assignee -> assigneeRepository.delete(assignee.getId()));
     }
     
     @Nested
@@ -45,55 +51,73 @@ class IssueManagementIntegrationTest extends AbstractIntegrationTest {
     class IssueLifecycleTest {
         
         @Test
-        @DisplayName("課題の完全なライフサイクル管理")
-        void testCompleteIssueLifecycle() {
-            // Given
-            var assignee = new AssigneeEntity(null, "Test User", "/images/avatars/default.svg");
-            assigneeRepository.insert(assignee);
+        @DisplayName("課題のライフサイクル全体をテストする")
+        @Rollback
+        void issueLifecycle_ShouldWorkCorrectly() {
+            // 1. 課題作成
+            issueRepository.insert("統合テスト課題", "統合テストの説明");
             
-            var issue = new IssueEntity(null, "Test Issue", "Test Description", IssueStatus.TODO, assignee);
-            var savedIssue = issueRepository.save(issue);
+            List<IssueEntity> allIssues = issueRepository.findAllTodoIssues();
+            assertThat(allIssues).hasSize(1);
             
-            // When & Then - TODO → DOING
-            issueRepository.moveToNextStatus(savedIssue.getId());
-            var doingIssue = issueRepository.findById(savedIssue.getId());
+            IssueEntity newIssue = allIssues.get(0);
+            assertThat(newIssue.getStatus()).isEqualTo(IssueStatus.TODO);
+            assertThat(newIssue.getSummary()).isEqualTo("統合テスト課題");
+            assertThat(newIssue.getDescription()).isEqualTo("統合テストの説明");
+            
+            // 2. DOING状態に移行
+            issueRepository.moveToNextStatus(newIssue.getId());
+            IssueEntity doingIssue = issueRepository.findById(newIssue.getId());
             assertThat(doingIssue.getStatus()).isEqualTo(IssueStatus.DOING);
             
-            // When & Then - DOING → DONE
-            issueRepository.moveToNextStatus(savedIssue.getId());
-            var doneIssue = issueRepository.findById(savedIssue.getId());
+            // 3. DONE状態に移行
+            issueRepository.moveToNextStatus(newIssue.getId());
+            IssueEntity doneIssue = issueRepository.findById(newIssue.getId());
             assertThat(doneIssue.getStatus()).isEqualTo(IssueStatus.DONE);
             
-            // When & Then - DONE → TODO (循環)
-            issueRepository.moveToPreviousStatus(savedIssue.getId());
-            var backToDoingIssue = issueRepository.findById(savedIssue.getId());
-            assertThat(backToDoingIssue.getStatus()).isEqualTo(IssueStatus.DOING);
+            // 4. TODO状態に戻る（循環）
+            issueRepository.moveToNextStatus(newIssue.getId());
+            IssueEntity backToTodoIssue = issueRepository.findById(newIssue.getId());
+            assertThat(backToTodoIssue.getStatus()).isEqualTo(IssueStatus.TODO);
+            
+            // 5. 課題削除
+            issueRepository.delete(newIssue.getId());
+            IssueEntity deletedIssue = issueRepository.findById(newIssue.getId());
+            assertThat(deletedIssue).isNull();
         }
         
         @Test
-        @DisplayName("複数の課題を異なるステータスで管理")
-        void testMultipleIssuesWithDifferentStatuses() {
+        @DisplayName("複数課題のステータス管理がされる")
+        @Rollback
+        void multipleIssues_ShouldBeTrackedSeparately() {
             // Given - 複数課題作成
-            var assignee = new AssigneeEntity(null, "Developer", "/images/avatars/default.svg");
-            assigneeRepository.insert(assignee);
+            issueRepository.insert("課題1", "説明1");
+            issueRepository.insert("課題2", "説明2");
+            issueRepository.insert("課題3", "説明3");
             
             // When - 各課題を異なるステータスに設定
-            var issue1 = issueRepository.save(new IssueEntity(null, "Issue 1", "Description 1", IssueStatus.TODO, assignee));
-            var issue2 = issueRepository.save(new IssueEntity(null, "Issue 2", "Description 2", IssueStatus.TODO, assignee));
-            var issue3 = issueRepository.save(new IssueEntity(null, "Issue 3", "Description 3", IssueStatus.TODO, assignee));
+            List<IssueEntity> initialIssues = issueRepository.findAllTodoIssues();
+            Long issue1Id = initialIssues.get(0).getId();
+            Long issue2Id = initialIssues.get(1).getId();
+            Long issue3Id = initialIssues.get(2).getId();
             
-            issueRepository.moveToNextStatus(issue1.getId());
-            issueRepository.moveToNextStatus(issue2.getId());
-            issueRepository.moveToNextStatus(issue2.getId());
+            issueRepository.moveToNextStatus(issue1Id); // TODO → DOING
+            issueRepository.moveToNextStatus(issue2Id); // TODO → DOING
+            issueRepository.moveToNextStatus(issue2Id); // DOING → DONE
+            // 課題3はTODOのまま
             
             // Then - 各ステータスの課題数を確認
-            var todoIssues = issueRepository.findAllTodoIssues();
-            var doingIssues = issueRepository.findAllDoingIssues();
-            var doneIssues = issueRepository.findAllDoneIssues();
+            List<IssueEntity> todoIssues = issueRepository.findAllTodoIssues();
+            List<IssueEntity> doingIssues = issueRepository.findAllDoingIssues();
+            List<IssueEntity> doneIssues = issueRepository.findAllDoneIssues();
             
             assertThat(todoIssues).hasSize(1);
             assertThat(doingIssues).hasSize(1);
             assertThat(doneIssues).hasSize(1);
+            
+            assertThat(todoIssues.get(0).getSummary()).isEqualTo("課題3");
+            assertThat(doingIssues.get(0).getSummary()).isEqualTo("課題1");
+            assertThat(doneIssues.get(0).getSummary()).isEqualTo("課題2");
         }
     }
     

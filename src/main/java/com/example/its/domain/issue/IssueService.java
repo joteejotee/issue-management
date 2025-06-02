@@ -13,26 +13,26 @@ public class IssueService {
 
     private final IssueRepository issueRepository;
 
-    public List<Issue> findTodoIssues() {
+    public List<IssueEntity> findTodoIssues() {
         return issueRepository.findTodoIssues();
     }
 
-    public List<Issue> findDoingIssues() {
+    public List<IssueEntity> findDoingIssues() {
         return issueRepository.findDoingIssues();
     }
 
-    public List<Issue> findDoneIssues() {
+    public List<IssueEntity> findDoneIssues() {
         return issueRepository.findDoneIssues();
     }
 
-    public List<Issue> findIncompleteIssues() {
+    public List<IssueEntity> findIncompleteIssues() {
         var todoIssues = issueRepository.findTodoIssues();
         var doingIssues = issueRepository.findDoingIssues();
         return Stream.concat(todoIssues.stream(), doingIssues.stream())
                 .collect(Collectors.toList());
     }
 
-    public List<Issue> findCompletedIssues() {
+    public List<IssueEntity> findCompletedIssues() {
         return issueRepository.findDoneIssues();
     }
 
@@ -45,36 +45,42 @@ public class IssueService {
     }
 
     public void completeIssue(long issueId) {
-        issueRepository.updateToComplete(issueId);
+        var issue = issueRepository.findById(issueId);
+        if (issue.isPresent() && issue.get().getStatus() == IssueStatus.DONE) {
+            issueRepository.updateToPreviousStatus(issueId);
+            issueRepository.updateToPreviousStatus(issueId);
+        } else {
+            while (true) {
+                var currentIssue = issueRepository.findById(issueId);
+                if (currentIssue.isPresent() && currentIssue.get().getStatus() == IssueStatus.DONE) {
+                    break;
+                }
+                issueRepository.updateToNextStatus(issueId);
+            }
+        }
     }
 
-    public void undoIssue(long issueId) {
-        issueRepository.updateToIncomplete(issueId);
-    }
-
-    public Issue findById(long issueId) {
+    public IssueEntity findById(long issueId) {
         return issueRepository.findById(issueId).orElse(null);
     }
 
     @Transactional
     public void create(String summary, String description) {
-        issueRepository.insert(new Issue(null, summary, description, IssueStatus.TODO, null));
+        IssueEntity issue = new IssueEntity(0L, summary, description, IssueStatus.TODO, null);
+        issueRepository.insert(issue);
     }
 
     @Transactional
     public void createWithAssignee(String summary, String description, Long assigneeId) {
-        var assignee = assigneeId != null ? new Assignee(assigneeId, null, null) : null;
-        var issue = new Issue(null, summary, description, IssueStatus.TODO, assignee);
+        IssueEntity issue = new IssueEntity(0L, summary, description, IssueStatus.TODO, assigneeId);
         issueRepository.insert(issue);
     }
 
-    // 課題の担当者を更新する
     @Transactional
     public void updateAssignee(Long issueId, Long assigneeId) {
         issueRepository.updateAssignee(issueId, assigneeId);
     }
 
-    // 指定されたIDの課題を削除する
     @Transactional
     public void delete(Long id) {
         issueRepository.delete(id);

@@ -10,6 +10,8 @@
     "build-css-check": "npx @tailwindcss/cli -i src/input.css -o src/main/resources/static/css/style.css --check",
     "dev": "npm run build-css",
     "build": "npm run build-css-prod",
+    "format": "prettier --write .",
+    "format-check": "prettier --check .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -31,6 +33,7 @@
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.8",
     "daisyui": "^5.0.42",
+    "prettier": "^3.5.3",
     "tailwindcss": "^4.1.8"
   }
 }

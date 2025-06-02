@@ -1,84 +1,114 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::body})}">
-
-<head>
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{fragments/layout :: layout(~{::title}, ~{::body})}"
+>
+  <head>
     <title>トップページ　｜　課題管理アプリケーション</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="min-h-screen bg-white relative overflow-hidden">
-        <!-- 流体形状の背景 -->
-        <div class="absolute inset-0 overflow-hidden">
-            <!-- 第1層：メインの流体形状 -->
-            <svg class="absolute top-0 right-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="xMaxYMid slice">
-                <defs>
-                    <linearGradient id="fluidGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#dbeafe" />
-                        <stop offset="50%" style="stop-color:#bfdbfe" />
-                        <stop offset="100%" style="stop-color:#93c5fd" />
-                    </linearGradient>
-                </defs>
-                <path d="M1440,0 C1280,120 1180,200 1000,280 C800,380 600,480 400,520 C250,550 150,600 80,680 C40,720 0,760 0,800 L1440,800 Z" fill="url(#fluidGradient1)" opacity="0.6" />
-            </svg>
+      <!-- 流体形状の背景 -->
+      <div class="absolute inset-0 overflow-hidden">
+        <!-- 第1層：メインの流体形状 -->
+        <svg
+          class="absolute top-0 right-0 w-full h-full"
+          viewBox="0 0 1440 800"
+          preserveAspectRatio="xMaxYMid slice"
+        >
+          <defs>
+            <linearGradient id="fluidGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color: #dbeafe" />
+              <stop offset="50%" style="stop-color: #bfdbfe" />
+              <stop offset="100%" style="stop-color: #93c5fd" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M1440,0 C1280,120 1180,200 1000,280 C800,380 600,480 400,520 C250,550 150,600 80,680 C40,720 0,760 0,800 L1440,800 Z"
+            fill="url(#fluidGradient1)"
+            opacity="0.6"
+          />
+        </svg>
 
-            <!-- 第2層：セカンダリの流体形状 -->
-            <svg class="absolute top-0 right-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="xMaxYMid slice">
-                <defs>
-                    <linearGradient id="fluidGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#a7f3d0" />
-                        <stop offset="100%" style="stop-color:#67e8f9" />
-                    </linearGradient>
-                </defs>
-                <path d="M1440,120 C1200,180 1050,300 850,350 C650,400 450,500 300,580 C200,630 120,700 60,750 C30,775 0,790 0,800 L1440,800 Z" fill="url(#fluidGradient2)" opacity="0.4" />
-            </svg>
+        <!-- 第2層：セカンダリの流体形状 -->
+        <svg
+          class="absolute top-0 right-0 w-full h-full"
+          viewBox="0 0 1440 800"
+          preserveAspectRatio="xMaxYMid slice"
+        >
+          <defs>
+            <linearGradient id="fluidGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color: #a7f3d0" />
+              <stop offset="100%" style="stop-color: #67e8f9" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M1440,120 C1200,180 1050,300 850,350 C650,400 450,500 300,580 C200,630 120,700 60,750 C30,775 0,790 0,800 L1440,800 Z"
+            fill="url(#fluidGradient2)"
+            opacity="0.4"
+          />
+        </svg>
 
-            <!-- 第3層：アクセント -->
-            <svg class="absolute top-0 right-0 w-full h-full" viewBox="0 0 1440 800" preserveAspectRatio="xMaxYMid slice">
-                <defs>
-                    <linearGradient id="fluidGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#e0f2fe" />
-                        <stop offset="100%" style="stop-color:#b3e5fc" />
-                    </linearGradient>
-                </defs>
-                <path d="M1440,200 C1300,250 1100,320 900,380 C700,440 500,550 350,620 C250,660 180,720 100,770 C50,795 20,805 0,800 L1440,800 Z" fill="url(#fluidGradient3)" opacity="0.3" />
-            </svg>
-        </div>
+        <!-- 第3層：アクセント -->
+        <svg
+          class="absolute top-0 right-0 w-full h-full"
+          viewBox="0 0 1440 800"
+          preserveAspectRatio="xMaxYMid slice"
+        >
+          <defs>
+            <linearGradient id="fluidGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color: #e0f2fe" />
+              <stop offset="100%" style="stop-color: #b3e5fc" />
+            </linearGradient>
+          </defs>
+          <path
+            d="M1440,200 C1300,250 1100,320 900,380 C700,440 500,550 350,620 C250,660 180,720 100,770 C50,795 20,805 0,800 L1440,800 Z"
+            fill="url(#fluidGradient3)"
+            opacity="0.3"
+          />
+        </svg>
+      </div>
 
-        <!-- メインコンテンツ -->
-        <div class="relative z-10 min-h-screen flex items-center justify-center p-4 md:p-8">
-            <div class="max-w-5xl w-full">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-2 items-center">
+      <!-- メインコンテンツ -->
+      <div class="relative z-10 min-h-screen flex items-center justify-center p-4 md:p-8">
+        <div class="max-w-5xl w-full">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-2 items-center">
+            <!-- 左側のコンテンツ -->
+            <div class="order-2 lg:order-1 text-center lg:text-left space-y-8">
+              <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 leading-tight">
+                Issue Management<br />
+                <span class="text-blue-600">へようこそ！</span>
+              </h1>
 
-                    <!-- 左側のコンテンツ -->
-                    <div class="order-2 lg:order-1 text-center lg:text-left space-y-8">
-                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 leading-tight">
-                            Issue Management<br>
-                            <span class="text-blue-600">へようこそ！</span>
-                        </h1>
+              <p class="text-lg md:text-xl text-gray-600 leading-relaxed">
+                開発現場での課題管理を効率的に行うための<br class="hidden md:block" />
+                システムです。バグや機能要望を簡単に管理できます。
+              </p>
 
-                        <p class="text-lg md:text-xl text-gray-600 leading-relaxed">
-                            開発現場での課題管理を効率的に行うための<br class="hidden md:block">
-                            システムです。バグや機能要望を簡単に管理できます。
-                        </p>
-
-                        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                            <a href="/login" class="inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-4 px-8 rounded-full text-lg transition-all duration-300 hover:shadow-lg hover:scale-105 hover:shadow-blue-500/30">
-                                ログイン
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- 右側のイラスト -->
-                    <div class="order-1 lg:order-2 flex justify-center lg:justify-end relative">
-                        <div class="w-full max-w-sm lg:max-w-md relative z-20">
-                            <img src="/images/Task-cuate.svg" alt="Task Management Illustration" class="w-full h-auto drop-shadow-2xl">
-                        </div>
-                    </div>
-
-                </div>
+              <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <a
+                  href="/login"
+                  class="inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-4 px-8 rounded-full text-lg transition-all duration-300 hover:shadow-lg hover:scale-105 hover:shadow-blue-500/30"
+                >
+                  ログイン
+                </a>
+              </div>
             </div>
-        </div>
-    </div>
-</body>
 
+            <!-- 右側のイラスト -->
+            <div class="order-1 lg:order-2 flex justify-center lg:justify-end relative">
+              <div class="w-full max-w-sm lg:max-w-md relative z-20">
+                <img
+                  src="/images/Task-cuate.svg"
+                  alt="Task Management Illustration"
+                  class="w-full h-auto drop-shadow-2xl"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
