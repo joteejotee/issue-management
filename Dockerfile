@@ -1,10 +1,14 @@
-# ビルドステージ（Debian系でGradleを実行）
-FROM eclipse-temurin:21-jdk as build-stage
+# Node.js用ビルドステージ（CSS前処理）
+FROM node:20-alpine as node-stage
 
-# Node.jsとnpmをインストール
-RUN apt-get update && apt-get install -y curl && \
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs
+WORKDIR /app
+COPY package*.json /app/
+RUN npm install
+COPY src/ /app/src/
+RUN npm run build
+
+# Javaアプリケーション用ビルドステージ
+FROM eclipse-temurin:21-jdk as build-stage
 
 WORKDIR /app
 COPY gradle /app/gradle
@@ -12,15 +16,11 @@ COPY gradlew /app/
 COPY build.gradle /app/
 RUN chmod +x gradlew
 
-# package.jsonをコピーしてnpm installを実行
-COPY package*.json /app/
-RUN npm install
-
 # プロジェクトファイルをコピー
 COPY . .
 
-# CSS前処理を実行
-RUN npm run build
+# Node.jsステージからビルド済みCSSをコピー
+COPY --from=node-stage /app/src/main/resources/static/css/ /app/src/main/resources/static/css/
 
 # Javaアプリケーションをビルド
 RUN ./gradlew build -x test
