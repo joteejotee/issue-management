@@ -1,6 +1,7 @@
 package com.example.its.config;
 
 import com.example.its.domain.user.CustomUserDetailsService;
+// import com.example.its.security.LoginRateLimitFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,13 +14,13 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 //パスワードの暗号化に使用されるエンコーダー
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-//パスワードのエンコード処理を行うインターフェース
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //メモリ上にユーザー情報を保存するクラス
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 //HTTPセキュリティのフィルターチェーンを設定するクラス
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -30,6 +31,9 @@ public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
+
+    // @Autowired
+    // private LoginRateLimitFilter loginRateLimitFilter;
 
     //メソッドがBean（オブジェクト）を生成することを示す
     @Bean
@@ -43,6 +47,7 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .usernameParameter("email")
                         .permitAll()
                         .defaultSuccessUrl("/issues", true)
                 )
@@ -50,11 +55,14 @@ public class SecurityConfig {
                         .permitAll()
                         .logoutSuccessUrl("/login")
                 )
+                // レート制限フィルターを追加（一時的にコメントアウト - メイン機能優先）
+                // .addFilterBefore(loginRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // セキュアなBCryptPasswordEncoderを使用
         return new BCryptPasswordEncoder();
     }
 }

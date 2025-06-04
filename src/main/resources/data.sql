@@ -20,6 +20,6 @@ INSERT INTO issues (summary, description, status, assignee_id) VALUES ('CSVエ�
 INSERT INTO issues (summary, description, status, assignee_id) VALUES ('パスワード強度チェック機能', 'ユーザー登録時とパスワード変更時に強度チェック（8文字以上、英数字記号組み合わせ）を実装しました。フロントエンドでリアルタイム表示も対応済み。', 'DONE', 2);
 INSERT INTO issues (summary, description, status, assignee_id) VALUES ('ログ出力レベルの調整', '本番環境でのログ出力レベルをINFOに変更し、デバッグ情報の出力を抑制しました。ログローテーションも日次で設定完了。', 'DONE', 4);
 
--- ユーザーデータ (パスワード: 'password' のBCryptハッシュ)
-INSERT INTO users (username, password) VALUES ('user', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG');
-INSERT INTO users (username, password) VALUES ('admin', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG');
+-- ユーザーデータ
+INSERT INTO users (email, password) VALUES ('test@example.com', '$2a$10$h7qtYQoWgagMxYTXYo7Jj.IyX36F9vAtO8YML85a4zAfDIx..HKfO');
+INSERT INTO users (email, password) VALUES ('admin@example.com', '$2a$10$h7qtYQoWgagMxYTXYo7Jj.IyX36F9vAtO8YML85a4zAfDIx..HKfO');

@@ -15,46 +15,24 @@ function togglePassword() {
   }
 }
 
-// フォームバリデーション
+// フォームバリデーション（Alpine.js + Zodに統合されたため簡素化）
 function validateForm() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value;
-  const errorDiv = document.getElementById("client-error");
+  const email = document.getElementById("email");
+  const password = document.getElementById("password");
 
-  // エラーメッセージをクリア
-  errorDiv.classList.add("hidden");
-  errorDiv.textContent = "";
-
-  // バリデーション
-  if (!username) {
-    showError("ユーザー名を入力してください。");
-    return false;
+  // 要素が存在しない場合は無視
+  if (!email || !password) {
+    return true;
   }
 
-  if (username.length < 3) {
-    showError("ユーザー名は3文字以上で入力してください。");
-    return false;
-  }
-
-  if (!password) {
-    showError("パスワードを入力してください。");
-    return false;
-  }
-
-  if (password.length < 6) {
-    showError("パスワードは6文字以上で入力してください。");
-    return false;
-  }
-
-  return true;
+  // 基本的なチェックのみ（詳細はAlpine.js + Zodが担当）
+  return email.value.trim() !== "" && password.value !== "";
 }
 
-// エラーメッセージを表示
+// エラーメッセージを表示（Alpine.js + Zodがメインのエラー表示を担当）
 function showError(message) {
-  const errorDiv = document.getElementById("client-error");
-  errorDiv.textContent = message;
-  errorDiv.classList.remove("hidden");
-  errorDiv.scrollIntoView({ behavior: "smooth" });
+  console.log("Error:", message);
+  // Alpine.js + Zodのエラー表示に任せる
 }
 
 // フォーム送信時の処理
@@ -62,18 +40,28 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("login-form");
   if (form) {
     form.addEventListener("submit", function (e) {
+      // Alpine.js + Zodバリデーションが主体なので、基本チェックのみ
       if (!validateForm()) {
         e.preventDefault();
       }
     });
   }
 
-  // 入力フィールドのフォーカス時にエラーをクリア
-  const inputs = document.querySelectorAll("#username, #password");
-  inputs.forEach(input => {
-    input.addEventListener("focus", function () {
-      const errorDiv = document.getElementById("client-error");
-      errorDiv.classList.add("hidden");
+  // 入力フィールドのフォーカス時の処理（存在する要素のみ）
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+
+  if (emailInput) {
+    emailInput.addEventListener("focus", function () {
+      // Alpine.jsのエラークリア機能に任せる
+      console.log("Email field focused");
     });
-  });
+  }
+
+  if (passwordInput) {
+    passwordInput.addEventListener("focus", function () {
+      // Alpine.jsのエラークリア機能に任せる
+      console.log("Password field focused");
+    });
+  }
 });
