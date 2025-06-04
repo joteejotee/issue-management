@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.0'
 	id 'io.spring.dependency-management' version '1.1.5'
+	id 'jacoco'
 }
 
 group = 'com.example'
@@ -48,8 +49,43 @@ dependencies {
 	testImplementation 'org.assertj:assertj-core:3.24.2'
 	testImplementation 'org.mockito:mockito-junit-jupiter:5.5.0'
 	testImplementation 'com.github.tomakehurst:wiremock-jre8:2.35.0'
+	
+	// REST API テスト用
+	testImplementation 'io.rest-assured:rest-assured:5.3.2'
+	testImplementation 'io.rest-assured:json-path:5.3.2'
+	testImplementation 'io.rest-assured:spring-mock-mvc:5.3.2'
+	
+	// テストデータ生成用
+	testImplementation 'net.datafaker:datafaker:2.0.2'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
 }
+
+// JaCoCo設定
+jacoco {
+	toolVersion = "0.8.11"
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = false
+		csv.required = false
+		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.60 // 60%のカバレッジを要求
+			}
+		}
+	}
+}
+
+check.dependsOn jacocoTestCoverageVerification

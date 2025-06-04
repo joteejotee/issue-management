@@ -1,10 +1,12 @@
 package com.example.its.web.issue;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotBlank;
 
 @Data
+@NoArgsConstructor
 public class IssueForm {
 
     @NotBlank

@@ -1,168 +1,95 @@
 <!doctype html>
-<html
-  xmlns:th="http://www.thymeleaf.org"
-  th:replace="~{fragments/layout :: layout(~{::title}, ~{::body})}"
->
-  <head>
-    <title>課題詳細 | 課題管理アプリケーション</title>
-  </head>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::body})}">
 
-  <body>
-    <div class="min-h-screen bg-white">
-      <!-- メインコンテンツ -->
-      <div class="container mx-auto px-4 py-6">
-        <!-- ヘッダー -->
-        <div class="bg-white rounded-lg mb-6 py-6">
-          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 class="text-3xl font-bold text-gray-800 mb-2">課題詳細</h1>
-              <p class="text-gray-600">課題の詳細情報を確認できます</p>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-3">
-              <a href="/issues" class="btn btn-outline">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 6h16M4 10h16M4 14h16M4 18h16"
-                  ></path>
-                </svg>
-                課題一覧
-              </a>
-              <a href="/issues/creationForm" class="btn btn-outline">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 4v16m8-8H4"
-                  ></path>
-                </svg>
-                新しい課題を作成
-              </a>
-            </div>
+<head>
+  <title>課題詳細 | 課題管理アプリケーション</title>
+</head>
+
+<body>
+  <div class="min-h-screen bg-white">
+    <!-- メインコンテンツ -->
+    <div class="container mx-auto px-4 py-6">
+      <!-- ヘッダー -->
+      <div class="bg-white rounded-lg mb-6 py-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">課題詳細</h1>
+            <p class="text-gray-600">課題の詳細情報を確認できます</p>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a href="/issues" class="btn btn-outline">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+              </svg>
+              課題一覧
+            </a>
+            <a href="/issues/creationForm" class="btn btn-outline">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              新しい課題を作成
+            </a>
           </div>
         </div>
+      </div>
 
-        <!-- メインカード -->
-        <div class="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
-          <div class="p-6">
-            <!-- 課題情報 -->
-            <div class="space-y-6">
-              <!-- 概要セクション -->
-              <div class="bg-white rounded-lg p-6">
-                <div class="flex items-center gap-3 mb-4">
-                  <svg
-                    class="w-5 h-5 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                    ></path>
-                  </svg>
-                  <h2 class="text-lg font-semibold text-gray-800">課題の概要</h2>
-                </div>
-                <h3
-                  class="text-xl font-semibold text-gray-800 leading-relaxed"
-                  th:text="${issue.summary}"
-                >
-                  課題のタイトル
-                </h3>
+      <!-- メインカード -->
+      <div class="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
+        <div class="p-6">
+          <!-- 課題情報 -->
+          <div class="space-y-6">
+            <!-- 概要セクション -->
+            <div class="bg-white rounded-lg p-6">
+              <div class="flex items-center gap-3 mb-4">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+                <h2 class="text-lg font-semibold text-gray-800">課題の概要</h2>
               </div>
+              <h3 class="text-xl font-semibold text-gray-800 leading-relaxed" th:text="${issue.summary}">
+                課題のタイトル
+              </h3>
+            </div>
 
-              <!-- 詳細説明セクション -->
-              <div class="bg-white rounded-lg p-6">
-                <div class="flex items-center gap-3 mb-4">
-                  <svg
-                    class="w-5 h-5 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    ></path>
-                  </svg>
-                  <h2 class="text-lg font-semibold text-gray-800">詳細説明</h2>
-                </div>
-                <p
-                  class="text-gray-700 leading-relaxed whitespace-pre-wrap"
-                  th:text="${issue.description}"
-                >
-                  課題の詳細な説明がここに表示されます。
-                </p>
+            <!-- 詳細説明セクション -->
+            <div class="bg-white rounded-lg p-6">
+              <div class="flex items-center gap-3 mb-4">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <h2 class="text-lg font-semibold text-gray-800">詳細説明</h2>
               </div>
+              <p class="text-gray-700 leading-relaxed whitespace-pre-wrap" th:text="${issue.description}">
+                課題の詳細な説明がここに表示されます。
+              </p>
+            </div>
 
-              <!-- 課題の状態 -->
-              <div class="bg-white rounded-lg p-6">
-                <div class="flex items-center gap-3 mb-4">
-                  <svg
-                    class="w-5 h-5 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
+            <!-- 課題の状態 -->
+            <div class="bg-white rounded-lg p-6">
+              <div class="flex items-center gap-3 mb-4">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h2 class="text-lg font-semibold text-gray-800">ステータス</h2>
+              </div>
+              <div class="flex items-center gap-2">
+                <div th:if="${issue.status.name() == 'TODO'}" class="badge badge-primary gap-2 text-white font-semibold px-4 py-3">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                   </svg>
-                  <h2 class="text-lg font-semibold text-gray-800">ステータス</h2>
+                  課題
                 </div>
-                <div class="flex items-center gap-2">
-                  <div
-                    th:if="${issue.status.name() == 'TODO'}"
-                    class="badge badge-primary gap-2 text-white font-semibold px-4 py-3"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                      ></path>
-                    </svg>
-                    課題
-                  </div>
-                  <div
-                    th:if="${issue.status.name() == 'DOING'}"
-                    class="badge badge-warning gap-2 text-white font-semibold px-4 py-3"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      ></path>
-                    </svg>
-                    作業中
-                  </div>
-                  <div
-                    th:if="${issue.status.name() == 'DONE'}"
-                    class="badge badge-success gap-2 text-white font-semibold px-4 py-3"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M5 13l4 4L19 7"
-                      ></path>
-                    </svg>
-                    完了済み
-                  </div>
+                <div th:if="${issue.status.name() == 'DOING'}" class="badge badge-warning gap-2 text-white font-semibold px-4 py-3">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  作業中
+                </div>
+                <div th:if="${issue.status.name() == 'DONE'}" class="badge badge-success gap-2 text-white font-semibold px-4 py-3">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  完了済み
                 </div>
               </div>
             </div>
@@ -170,5 +97,7 @@
         </div>
       </div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

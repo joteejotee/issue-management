@@ -4,11 +4,13 @@ import com.example.its.domain.assignee.AssigneeService;
 import com.example.its.domain.issue.IssueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @Controller
@@ -36,9 +38,17 @@ public class IssueController {
 
     // 課題作成フォームを表示する
     @GetMapping("/creationForm")
-    public String showCreationForm(@ModelAttribute("issueForm") IssueForm form, Model model) {
-        var assignees = assigneeService.findAll();
-        model.addAttribute("assignees", assignees);
+    public String showCreationForm(Model model) {
+        try {
+            var assignees = assigneeService.findAll();
+            model.addAttribute("assignees", assignees);
+            model.addAttribute("issueForm", new IssueForm());
+        } catch (Exception e) {
+            log.error("課題作成フォーム表示中にエラーが発生しました", e);
+            // エラーが発生した場合でも空のリストを設定
+            model.addAttribute("assignees", java.util.Collections.emptyList());
+            model.addAttribute("issueForm", new IssueForm());
+        }
         return "issues/creationForm";
     }
 
@@ -46,6 +56,10 @@ public class IssueController {
     @GetMapping("/{issueId}")
     public String show(@PathVariable("issueId") long issueId, Model model) {
         var issue = issueService.findById(issueId);
+        if (issue == null) {
+            log.warn("存在しない課題IDが指定されました: {}", issueId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "課題が見つかりません");
+        }
         model.addAttribute("issue", issue);
         return "issues/detail";
     }
@@ -71,35 +85,30 @@ public class IssueController {
         return "redirect:/issues"; // 課題一覧にリダイレクトする
     }
 
-    // フォームから受け取った課題を作成し、データベースに保存する(既存のメソッドをそのまま保持)
+    // フォームから受け取った課題を作成し、データベースに保存する
     @PostMapping
     public String create(@Validated @ModelAttribute("issueForm") IssueForm form, BindingResult bindingResult, Model model) {
-        System.out.println("=== createメソッド開始 - コントローラーに到達しました ===");
-        log.error("=== createメソッド開始 - コントローラーに到達しました ===");
+        log.debug("課題作成処理を開始します - summary: {}", form.getSummary());
+        
+        if (bindingResult.hasErrors()) {
+            log.info("バリデーションエラーが発生しました: {}", bindingResult.getErrorCount());
+            var assignees = assigneeService.findAll();
+            model.addAttribute("assignees", assignees);
+            model.addAttribute("issueForm", form);
+            return "issues/creationForm";
+        }
+        
         try {
-            log.info("=== 課題作成処理開始 ===");
-            log.info("フォームデータ: summary={}, description={}, assigneeId={}", 
-                    form.getSummary(), form.getDescription(), form.getAssigneeId());
-            
-            if (bindingResult.hasErrors()) {
-                log.warn("バリデーションエラーが発生しました: {}", bindingResult.getAllErrors());
-                var assignees = assigneeService.findAll();
-                model.addAttribute("assignees", assignees);
-                return "issues/creationForm";
-            }
-            
-            log.info("課題作成サービス呼び出し開始");
             issueService.createWithAssignee(form.getSummary(), form.getDescription(), form.getAssigneeId());
-            log.info("課題作成サービス呼び出し完了");
-            
-            log.info("=== 課題作成処理完了 ===");
+            log.info("課題作成が完了しました - summary: {}", form.getSummary());
             return "redirect:/issues";
         } catch (Exception e) {
-            log.error("=== 課題作成処理でエラーが発生しました ===");
-            log.error("エラークラス: {}", e.getClass().getSimpleName());
-            log.error("エラーメッセージ: {}", e.getMessage());
-            log.error("スタックトレース: ", e);
-            throw e; // 元の例外を再スロー
+            log.error("課題作成処理でエラーが発生しました - summary: {}", form.getSummary(), e);
+            var assignees = assigneeService.findAll();
+            model.addAttribute("assignees", assignees);
+            model.addAttribute("issueForm", form);
+            model.addAttribute("errorMessage", "課題の作成中にエラーが発生しました。");
+            return "issues/creationForm";
         }
     }
 

@@ -25,36 +25,32 @@ public class AssigneeController {
     }
 
     @GetMapping("/creationForm")
-    public String showCreationForm(@ModelAttribute AssigneeForm form) {
+    public String showCreationForm(Model model) {
+        model.addAttribute("assigneeForm", new AssigneeForm());
         return "assignees/creationForm";
     }
 
     @PostMapping
-    public String create(@Validated AssigneeForm form, BindingResult bindingResult) {
-        log.info("=== 担当者作成処理開始 ===");
-        log.info("フォームデータ: name={}, photoUrl={}", form.getName(), form.getPhotoUrl());
-        log.info("バリデーションエラー数: {}", bindingResult.getErrorCount());
+    public String create(@Validated @ModelAttribute("assigneeForm") AssigneeForm form, BindingResult bindingResult, Model model) {
+        log.debug("担当者作成処理を開始します - name: {}", form.getName());
         
         if (bindingResult.hasErrors()) {
-            log.error("バリデーションエラーが発生しました:");
-            bindingResult.getAllErrors().forEach(error -> 
-                log.error("- {}", error.getDefaultMessage())
-            );
+            log.info("バリデーションエラーが発生しました: {}", bindingResult.getErrorCount());
+            model.addAttribute("assigneeForm", form);
             return "assignees/creationForm";
         }
         
         try {
-            log.info("担当者サービスのcreateメソッドを呼び出し中...");
             var createdAssignee = assigneeService.create(form.getName(), form.getPhotoUrl());
-            log.info("担当者作成完了: id={}, name={}, photoUrl={}", 
-                createdAssignee.getId(), createdAssignee.getName(), createdAssignee.getPhotoUrl());
+            log.info("担当者作成が完了しました - id: {}, name: {}", 
+                createdAssignee.getId(), createdAssignee.getName());
+            return "redirect:/assignees";
         } catch (Exception e) {
-            log.error("担当者作成中にエラーが発生しました", e);
-            throw e;
+            log.error("担当者作成中にエラーが発生しました - name: {}", form.getName(), e);
+            model.addAttribute("assigneeForm", form);
+            model.addAttribute("errorMessage", "担当者の作成中にエラーが発生しました。");
+            return "assignees/creationForm";
         }
-        
-        log.info("担当者一覧画面にリダイレクト中...");
-        return "redirect:/assignees";
     }
 
     @GetMapping("/{id}/editForm")
@@ -70,8 +66,9 @@ public class AssigneeController {
     }
 
     @PostMapping("/{id}")
-    public String update(@PathVariable long id, @Validated AssigneeForm form, BindingResult bindingResult, Model model) {
+    public String update(@PathVariable long id, @Validated @ModelAttribute("assigneeForm") AssigneeForm form, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("assigneeForm", form);
             model.addAttribute("assigneeId", id);
             return "assignees/editForm";
         }
