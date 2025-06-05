@@ -1,0 +1,69 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+title: "プロジェクト共通ルール"
+---
+
+# コードスタイルと構造
+
+- スタイルリングは全て DaisyUI で実装する。例外として DaisyUI に適切な機能が無い場合は、無理にDaisyUIを使わなくてよい。
+
+# 使用技術とバージョン
+
+## Tailwind CSS
+
+- **バージョン**: v4.1.8 を使用
+- Tailwind CSS v4 を使用（内蔵コンパイラ採用）
+- 基本設定は `src/input.css` で直接管理
+- 高度なカスタマイズが必要な場合は `tailwind.config.js` を使用可能
+- PostCSS 設定は不要（v4 では内蔵されている）
+
+## DaisyUI
+
+- **バージョン**: v5.0.42 を使用
+- Tailwind CSS v4 対応の正式バージョン
+- プラグイン設定は `src/input.css` 内の `@plugin "daisyui"` で管理（公式確認済み）
+- テーマ設定は `src/input.css` で基本設定を行い、詳細なカスタマイズは `tailwind.config.js` で可能
+
+# 開発ガイドライン
+
+## CSSビルドコマンド
+- Watchモード: `npm run build-css` または `npm run dev`
+- 本番minify: `npm run build` または `npm run build-css-prod`
+- 構文チェック: `npm run build-css-check`
+
+**注記**:
+  - 面接官は `docker compose up` のみ実行し、上記のnpmコマンドは使用しません。
+  - 今回は本番デプロイしないので本番minifyは事実上使わない。形だけ用意する。
+
+## スタイルファイル
+
+- **入力ファイル**: `src/input.css` （編集対象）
+- **出力ファイル**: `src/main/resources/static/css/style.css` （自動生成、編集禁止）
+
+## 設定管理方針
+
+### src/input.css で管理
+- フォント定義、アニメーション、複雑なセレクター
+- DaisyUIカラーテーマ、カスタムユーティリティ・コンポーネント
+
+### tailwind.config.js で管理
+- content設定（必須）、高度なプラグイン設定（必要時のみ）
+
+## フォント管理
+
+- Inter（英語）、Noto Sans JP（日本語）は**CDN を使わず**、`/fonts/` ディレクトリに**ローカルファイルとしてセルフホスト**しています。
+- `@font-face` により `src/main/resources/static/css/style.css` から利用。
+
+## 開発・デプロイの基本方針
+
+- **フロントエンド（Tailwind CSS + DaisyUI）**:
+  - 開発環境: ローカル npm + Docker 連携（CSS ビルド + Spring Boot）
+  - 本番環境: 今回はデプロイしません（面接用ポートフォリオのため）
+
+- **バックエンド（Spring Boot）**:
+  - 開発環境: Docker を使用（Spring Boot + PostgreSQL）
+  - 本番環境: 今回はデプロイしません（面接用ポートフォリオのため）
