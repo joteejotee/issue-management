@@ -22,8 +22,8 @@ COPY . .
 # Node.jsステージからビルド済みCSSをコピー
 COPY --from=node-stage /app/src/main/resources/static/css/ /app/src/main/resources/static/css/
 
-# Javaアプリケーションをビルド
-RUN ./gradlew build -x test
+# Javaアプリケーションをビルド（テストとカバレッジチェックをスキップ）
+RUN ./gradlew build -x test -x jacocoTestCoverageVerification
 
 # 実行ステージ（Alpine系で軽量化）
 FROM eclipse-temurin:21-jdk-alpine
