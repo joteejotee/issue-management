@@ -4,10 +4,12 @@ import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -17,14 +19,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@MybatisTest
+@SpringBootTest
 @Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@TestPropertySource(properties = {
-    "spring.datasource.url=",
-    "spring.datasource.username=",
-    "spring.datasource.password="
-})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayName("AssigneeRepository マッパーテスト")
 class AssigneeRepositoryTest {
 
@@ -33,7 +30,20 @@ class AssigneeRepositoryTest {
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test")
-            .withInitScript("schema.sql");
+            .withCopyFileToContainer(
+                org.testcontainers.utility.MountableFile.forClasspathResource("schema.sql"),
+                "/docker-entrypoint-initdb.d/01-schema.sql"
+            );
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+        // テスト環境では data.sql の自動実行を無効化
+        registry.add("spring.sql.init.mode", () -> "never");
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "none");
+    }
 
     @Autowired
     private AssigneeRepository assigneeRepository;
@@ -43,11 +53,6 @@ class AssigneeRepositoryTest {
     @BeforeEach
     void setUp() {
         faker = new Faker();
-        
-        // Testcontainerの動的プロパティを設定
-        System.setProperty("spring.datasource.url", postgres.getJdbcUrl());
-        System.setProperty("spring.datasource.username", postgres.getUsername());
-        System.setProperty("spring.datasource.password", postgres.getPassword());
     }
 
     @Test
@@ -68,6 +73,7 @@ class AssigneeRepositoryTest {
     }
 
     @Test
+    @Sql("/cleanup.sql")
     @DisplayName("すべての担当者を取得できる")
     void shouldFindAllAssignees() {
         // Given: 複数の担当者を作成
@@ -185,6 +191,7 @@ class AssigneeRepositoryTest {
     }
 
     @Test
+    @Sql("/cleanup.sql")
     @DisplayName("複数の担当者がIDの昇順で取得される")
     void shouldReturnAssigneesOrderedById() {
         // Given: 複数の担当者を時系列で作成

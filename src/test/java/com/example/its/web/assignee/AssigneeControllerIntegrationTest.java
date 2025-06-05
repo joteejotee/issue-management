@@ -33,7 +33,14 @@ class AssigneeControllerIntegrationTest {
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test")
-            .withInitScript("schema.sql");
+            .withCopyFileToContainer(
+                org.testcontainers.utility.MountableFile.forClasspathResource("schema.sql"),
+                "/docker-entrypoint-initdb.d/01-schema.sql"
+            )
+            .withCopyFileToContainer(
+                org.testcontainers.utility.MountableFile.forClasspathResource("integration-test-data.sql"),
+                "/docker-entrypoint-initdb.d/02-integration-test-data.sql"
+            );
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
