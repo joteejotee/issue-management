@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build-css": "npx @tailwindcss/cli -i src/input.css -o src/main/resources/static/css/style.css --watch",
+    "build-css": "postcss src/input.css -o src/main/resources/static/css/style.css",
     "build-css-prod": "npx @tailwindcss/cli -i src/input.css -o src/main/resources/static/css/style.css --minify",
     "build-css-check": "npx @tailwindcss/cli -i src/input.css -o src/main/resources/static/css/style.css --check",
     "dev": "npm run build-css",
@@ -35,11 +35,14 @@
   "devDependencies": {
     "@playwright/test": "^1.52.0",
     "@tailwindcss/cli": "^4.1.8",
+    "@tailwindcss/postcss": "^4.1.8",
     "@testing-library/dom": "^9.3.4",
     "@web/test-runner": "^0.18.3",
     "@web/test-runner-commands": "^0.9.0",
     "@web/test-runner-playwright": "^0.11.0",
     "daisyui": "^5.0.42",
+    "postcss-cli": "^11.0.1",
+    "postcss-nested": "^7.0.2",
     "prettier": "^3.5.3",
     "tailwindcss": "^4.1.8"
   },

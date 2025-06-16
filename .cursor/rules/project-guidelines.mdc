@@ -16,10 +16,10 @@ title: "プロジェクト共通ルール"
 ## Tailwind CSS
 
 - **バージョン**: v4.1.8 を使用
-- Tailwind CSS v4 を使用（内蔵コンパイラ採用）
+- Tailwind CSS v4 を使用
 - 基本設定は `src/input.css` で直接管理
 - 高度なカスタマイズが必要な場合は `tailwind.config.js` を使用可能
-- PostCSS 設定は不要（v4 では内蔵されている）
+- **PostCSS設定**: v4では本番環境で内蔵lightningcssが動作するが、開発環境では動作しないため、DaisyUIのSCSSネスト記法処理用にPostCSSプラグイン（`postcss-nested`, `@tailwindcss/postcss`）を追加（公式解決方法）
 
 ## DaisyUI
 
@@ -34,6 +34,7 @@ title: "プロジェクト共通ルール"
 - Watchモード: `npm run build-css` または `npm run dev`
 - 本番minify: `npm run build` または `npm run build-css-prod`
 - 構文チェック: `npm run build-css-check`
+- **PostCSS使用**: `postcss src/input.css -o src/main/resources/static/css/style.css`
 
 **注記**:
   - 面接官は `docker compose up` のみ実行し、上記のnpmコマンドは使用しません。
@@ -43,6 +44,7 @@ title: "プロジェクト共通ルール"
 
 - **入力ファイル**: `src/input.css` （編集対象）
 - **出力ファイル**: `src/main/resources/static/css/style.css` （自動生成、編集禁止）
+- **IDE設定**: 自動生成ファイルは `.vscode/settings.json` で検証対象外に設定済み
 
 ## 設定管理方針
 
