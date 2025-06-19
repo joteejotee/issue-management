@@ -58,11 +58,15 @@
 
               <div>
                 <div th:if="${issue.assigneeId != null}">
-                  <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}" th:text="${assignee.name}">
-                    担当者名
+                  <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}" class="flex items-center gap-1">
+                    <span class="bg-black text-white px-1.5 text-xs rounded-sm">担当</span>
+                    <span th:text="${assignee.name}">担当者名</span>
                   </div>
                 </div>
-                <div th:if="${issue.assigneeId == null}">担当者未定</div>
+                <div th:if="${issue.assigneeId == null}" class="flex items-center gap-1">
+                  <span class="bg-black text-white px-1.5 text-xs rounded-sm">担当</span>
+                  <span>担当者未定</span>
+                </div>
                 <a th:href="@{/issues/{id}(id=${issue.id})}" class="text-xs uppercase font-semibold opacity-60 line-clamp-2 hover:opacity-80 hover:text-primary transition-all duration-200 cursor-pointer" th:text="${issue.summary}">課題のタイトル</a>
               </div>
               <p class="list-col-wrap text-xs line-clamp-2" th:text="${issue.description}">
@@ -112,11 +116,15 @@
 
               <div>
                 <div th:if="${issue.assigneeId != null}">
-                  <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}" th:text="${assignee.name}">
-                    担当者名
+                  <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}" class="flex items-center gap-1">
+                    <span class="bg-black text-white px-1.5 text-xs rounded-sm">担当</span>
+                    <span th:text="${assignee.name}">担当者名</span>
                   </div>
                 </div>
-                <div th:if="${issue.assigneeId == null}">担当者未定</div>
+                <div th:if="${issue.assigneeId == null}" class="flex items-center gap-1">
+                  <span class="bg-black text-white px-1.5 text-xs rounded-sm">担当</span>
+                  <span>担当者未定</span>
+                </div>
                 <a th:href="@{/issues/{id}(id=${issue.id})}" class="text-xs uppercase font-semibold opacity-60 line-clamp-2 hover:opacity-80 hover:text-primary transition-all duration-200 cursor-pointer" th:text="${issue.summary}">課題のタイトル</a>
               </div>
               <p class="list-col-wrap text-xs line-clamp-2" th:text="${issue.description}">
@@ -169,11 +177,15 @@
 
             <div>
               <div th:if="${issue.assigneeId != null}">
-                <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}" th:text="${assignee.name}">
-                  担当者名
+                <div th:each="assignee : ${assignees}" th:if="${assignee.id == issue.assigneeId}" class="flex items-center gap-1">
+                  <span class="bg-black text-white px-1.5 text-xs rounded-sm">担当</span>
+                  <span th:text="${assignee.name}">担当者名</span>
                 </div>
               </div>
-              <div th:if="${issue.assigneeId == null}">担当者未定</div>
+              <div th:if="${issue.assigneeId == null}" class="flex items-center gap-1">
+                <span class="bg-black text-white px-1.5 text-xs rounded-sm">担当</span>
+                <span>担当者未定</span>
+              </div>
               <a th:href="@{/issues/{id}(id=${issue.id})}" class="text-xs uppercase font-semibold opacity-60 line-clamp-2 hover:opacity-80 hover:text-primary transition-all duration-200 cursor-pointer" th:text="${issue.summary}">完了した課題のタイトル</a>
             </div>
             <p class="list-col-wrap text-xs line-clamp-2" th:text="${issue.description}">
