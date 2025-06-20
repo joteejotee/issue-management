@@ -1,274 +1,246 @@
 <!doctype html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-    <title>担当者追加 - Issue Management</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
 
-    <!-- Uppy CSS -->
-    <link href="https://releases.transloadit.com/uppy/v3.19.1/uppy.min.css" rel="stylesheet" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+  <title>担当者追加 - Issue Management</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
 
-    <!-- カスタムスタイル -->
-    <style>
-      /* UppyをDaisyUIと調和させるカスタムスタイル */
-      .uppy-Dashboard-inner {
-        background-color: hsl(var(--b1));
-        border: 2px dashed hsl(var(--bc) / 0.2);
-        border-radius: var(--rounded-box);
-      }
+  <!-- Uppy CSS -->
+  <link href="https://releases.transloadit.com/uppy/v3.19.1/uppy.min.css" rel="stylesheet" />
 
-      .uppy-Dashboard-dropFilesHereHint {
-        color: hsl(var(--bc) / 0.7);
-        font-weight: 500;
-      }
+  <!-- カスタムスタイル -->
+  <style>
+    /* UppyをDaisyUIと調和させるカスタムスタイル */
+    .uppy-Dashboard-inner {
+      background-color: hsl(var(--b1));
+      border: 2px dashed hsl(var(--bc) / 0.2);
+      border-radius: var(--rounded-box);
+    }
 
-      .uppy-DashboardAddFiles-title {
-        color: hsl(var(--bc));
-        font-weight: 600;
-      }
+    .uppy-Dashboard-dropFilesHereHint {
+      color: hsl(var(--bc) / 0.7);
+      font-weight: 500;
+    }
 
-      .uppy-DashboardAddFiles-info {
-        color: hsl(var(--bc) / 0.6);
-      }
+    .uppy-DashboardAddFiles-title {
+      color: hsl(var(--bc));
+      font-weight: 600;
+    }
 
-      .uppy-Dashboard--isDraggingOver .uppy-Dashboard-inner {
-        border-color: hsl(var(--p));
-        background-color: hsl(var(--p) / 0.1);
-      }
+    .uppy-DashboardAddFiles-info {
+      color: hsl(var(--bc) / 0.6);
+    }
 
-      .uppy-size--height-md .uppy-Dashboard-inner {
-        min-height: 200px;
-      }
+    .uppy-Dashboard--isDraggingOver .uppy-Dashboard-inner {
+      border-color: hsl(var(--p));
+      background-color: hsl(var(--p) / 0.1);
+    }
 
-      /* ファイルが追加された時の高さ調整 */
-      .uppy-Dashboard-inner.has-files {
-        min-height: 300px !important;
-      }
+    .uppy-size--height-md .uppy-Dashboard-inner {
+      min-height: 200px;
+    }
 
-      /* ファイルプレビューエリアの調整 */
-      .uppy-Dashboard-filesContainer {
-        max-height: none !important;
-      }
+    /* ファイルが追加された時の高さ調整 */
+    .uppy-Dashboard-inner.has-files {
+      min-height: 300px !important;
+    }
 
-      .uppy-Dashboard-files {
-        max-height: none !important;
-      }
+    /* ファイルプレビューエリアの調整 */
+    .uppy-Dashboard-filesContainer {
+      max-height: none !important;
+    }
 
-      /* 個別ファイルアイテムのスタイル */
-      .uppy-Dashboard-Item {
-        margin-bottom: 10px;
-      }
+    .uppy-Dashboard-files {
+      max-height: none !important;
+    }
 
-      /* アップロード完了後も画像を表示 */
-      .uppy-Dashboard-Item--complete .uppy-Dashboard-Item-preview {
-        display: block !important;
-      }
+    /* 個別ファイルアイテムのスタイル */
+    .uppy-Dashboard-Item {
+      margin-bottom: 10px;
+    }
 
-      .uppy-Dashboard-Item--complete {
-        background-color: hsl(var(--su) / 0.1);
-        border-color: hsl(var(--su));
-      }
+    /* アップロード完了後も画像を表示 */
+    .uppy-Dashboard-Item--complete .uppy-Dashboard-Item-preview {
+      display: block !important;
+    }
 
-      /* プログレスバーを完了後は非表示 */
-      .uppy-Dashboard-Item--complete .uppy-Dashboard-Item-progress {
-        display: none;
-      }
+    .uppy-Dashboard-Item--complete {
+      background-color: hsl(var(--su) / 0.1);
+      border-color: hsl(var(--su));
+    }
 
-      /* ステータスメッセージのスタイル調整 */
-      .uppy-Dashboard-Item--complete .uppy-Dashboard-Item-status {
-        color: hsl(var(--su));
-        font-weight: 600;
-      }
+    /* プログレスバーを完了後は非表示 */
+    .uppy-Dashboard-Item--complete .uppy-Dashboard-Item-progress {
+      display: none;
+    }
 
-      /* 成功メッセージ */
-      .upload-success {
-        @apply alert alert-success mt-4;
-      }
+    /* ステータスメッセージのスタイル調整 */
+    .uppy-Dashboard-Item--complete .uppy-Dashboard-Item-status {
+      color: hsl(var(--su));
+      font-weight: 600;
+    }
 
-      /* エラーメッセージ */
-      .upload-error {
-        @apply alert alert-error mt-4;
-      }
+    /* 成功メッセージ */
+    .upload-success {
+      @apply alert alert-success mt-4;
+    }
 
-      /* アップロード完了後のスタイル改善 */
-      .uppy-StatusBar {
-        background-color: hsl(var(--su));
-        color: hsl(var(--suc));
-        border-radius: var(--rounded-btn);
-      }
+    /* エラーメッセージ */
+    .upload-error {
+      @apply alert alert-error mt-4;
+    }
 
-      .uppy-StatusBar.is-complete {
-        background-color: hsl(var(--su));
-      }
+    /* アップロード完了後のスタイル改善 */
+    .uppy-StatusBar {
+      background-color: hsl(var(--su));
+      color: hsl(var(--suc));
+      border-radius: var(--rounded-btn);
+    }
 
-      /* ファイルプレビューのスタイル */
-      .uppy-Dashboard-Item-preview {
-        border-radius: var(--rounded-btn);
-      }
+    .uppy-StatusBar.is-complete {
+      background-color: hsl(var(--su));
+    }
 
-      .uppy-Dashboard-Item {
-        border-radius: var(--rounded-box);
-        border: 1px solid hsl(var(--b3));
-      }
+    /* ファイルプレビューのスタイル */
+    .uppy-Dashboard-Item-preview {
+      border-radius: var(--rounded-btn);
+    }
 
-      .uppy-Dashboard-Item--inProgress {
-        border-color: hsl(var(--p));
-      }
+    .uppy-Dashboard-Item {
+      border-radius: var(--rounded-box);
+      border: 1px solid hsl(var(--b3));
+    }
 
-      /* アップロード完了メッセージのスタイル */
-      .uppy-Informer {
-        background-color: hsl(var(--su));
-        color: hsl(var(--suc));
-        border-radius: var(--rounded-btn);
-      }
-    </style>
-  </head>
+    .uppy-Dashboard-Item--inProgress {
+      border-color: hsl(var(--p));
+    }
 
-  <body class="bg-base-100 min-h-screen">
-    <!-- ナビゲーション -->
-    <div class="navbar bg-primary text-primary-content">
-      <div class="navbar-start">
-        <a class="btn btn-ghost text-xl" th:href="@{/}">Issue Management</a>
-      </div>
-      <div class="navbar-center">
-        <ul class="menu menu-horizontal px-1">
-          <li><a th:href="@{/issues}">課題一覧</a></li>
-          <li><a th:href="@{/assignees}">担当者一覧</a></li>
-        </ul>
-      </div>
-      <div class="navbar-end">
-        <form th:action="@{/logout}" method="post" class="inline">
-          <button type="submit" class="btn btn-ghost">ログアウト</button>
-        </form>
-      </div>
-    </div>
+    /* アップロード完了メッセージのスタイル */
+    .uppy-Informer {
+      background-color: hsl(var(--su));
+      color: hsl(var(--suc));
+      border-radius: var(--rounded-btn);
+    }
+  </style>
+</head>
 
+<body>
+  <div class="min-h-screen bg-white">
     <!-- メインコンテンツ -->
-    <div class="container mx-auto px-4 py-8 max-w-2xl">
-      <div class="mb-6">
-        <h1 class="text-3xl font-bold mb-2">新しい担当者を追加</h1>
-        <div class="breadcrumbs text-sm">
-          <ul>
-            <li><a th:href="@{/assignees}">担当者一覧</a></li>
-            <li>新規追加</li>
-          </ul>
+    <div class="container mx-auto px-6 py-4 pl-6 pr-6 pt-4 pb-4">
+      <!-- ヘッダー -->
+      <div class="bg-white rounded-lg mb-6 py-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">新しい担当者を追加</h1>
+            <p class="text-gray-600">チームに新しいメンバーを追加しましょう</p>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a href="/issues" class="btn btn-outline">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+              課題一覧
+            </a>
+            <a href="/assignees" class="btn btn-outline">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+              担当者一覧
+            </a>
+            <form method="post" action="/logout" class="inline">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+              <button type="submit" class="btn btn-outline">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                </svg>
+                ログアウト
+              </button>
+            </form>
+          </div>
         </div>
       </div>
 
-      <!-- フォーム -->
-      <div class="card bg-base-200 shadow-xl">
-        <div class="card-body">
-          <form
-            th:action="@{/assignees}"
-            th:object="${assigneeForm}"
-            method="post"
-            id="assigneeForm"
-          >
-            <!-- 担当者名 -->
-            <div class="form-control mb-4">
-              <label class="label" for="name">
-                <span class="label-text font-semibold"
-                  >担当者名 <span class="text-error">*</span></span
-                >
-              </label>
-              <input
-                type="text"
-                id="name"
-                th:field="*{name}"
-                class="input input-bordered w-full"
-                th:classappend="${#fields.hasErrors('name')} ? 'input-error' : ''"
-                placeholder="担当者の名前を入力してください"
-              />
-              <div th:if="${#fields.hasErrors('name')}" class="label">
-                <span class="label-text-alt text-error" th:errors="*{name}">エラーメッセージ</span>
+      <!-- フォームコンテンツ -->
+      <div class="max-w-2xl mx-auto">
+
+        <!-- フォーム -->
+        <div class="card bg-base-200 shadow-xl">
+          <div class="card-body">
+            <form th:action="@{/assignees}" th:object="${assigneeForm}" method="post" id="assigneeForm">
+              <!-- 担当者名 -->
+              <div class="form-control mb-4">
+                <label class="label" for="name">
+                  <span class="label-text font-semibold">担当者名 <span class="text-error">*</span></span>
+                </label>
+                <input type="text" id="name" th:field="*{name}" class="input input-bordered w-full" th:classappend="${#fields.hasErrors('name')} ? 'input-error' : ''" placeholder="担当者の名前を入力してください" />
+                <div th:if="${#fields.hasErrors('name')}" class="label">
+                  <span class="label-text-alt text-error" th:errors="*{name}">エラーメッセージ</span>
+                </div>
               </div>
-            </div>
 
-            <!-- 写真アップロード -->
-            <div class="form-control mb-6">
-              <label class="label">
-                <span class="label-text font-semibold"
-                  >プロフィール写真 <span class="text-error">*</span></span
-                >
-              </label>
+              <!-- 写真アップロード -->
+              <div class="form-control mb-6">
+                <label class="label">
+                  <span class="label-text font-semibold">プロフィール写真 <span class="text-error">*</span></span>
+                </label>
 
-              <!-- ファイルアップロードエリア -->
-              <div id="uppy-drag-drop"></div>
+                <!-- ファイルアップロードエリア -->
+                <div id="uppy-drag-drop"></div>
 
-              <!-- 隠しフィールド（アップロードされたファイルパスを保持） -->
-              <input type="hidden" id="photoUrl" th:field="*{photoUrl}" />
-              <input type="hidden" id="uploadedFilePath" name="uploadedFilePath" />
+                <!-- 隠しフィールド（アップロードされたファイルパスを保持） -->
+                <input type="hidden" id="photoUrl" th:field="*{photoUrl}" />
+                <input type="hidden" id="uploadedFilePath" name="uploadedFilePath" />
 
-              <!-- アップロード状況メッセージ -->
-              <div id="upload-message" class="mt-4" style="display: none"></div>
+                <!-- アップロード状況メッセージ -->
+                <div id="upload-message" class="mt-4" style="display: none"></div>
 
-              <div class="label">
-                <span class="label-text-alt">JPG、PNG、GIF、WebP形式、最大5MBまで</span>
+                <div class="label">
+                  <span class="label-text-alt">JPG、PNG、GIF、WebP形式、最大5MBまで</span>
+                </div>
+                <div th:if="${#fields.hasErrors('photoUrl')}" class="label">
+                  <span class="label-text-alt text-error" th:errors="*{photoUrl}">エラーメッセージ</span>
+                </div>
               </div>
-              <div th:if="${#fields.hasErrors('photoUrl')}" class="label">
-                <span class="label-text-alt text-error" th:errors="*{photoUrl}"
-                  >エラーメッセージ</span
-                >
-              </div>
-            </div>
 
-            <!-- プレビュー -->
-            <div class="form-control mb-6">
-              <label class="label">
-                <span class="label-text font-semibold">プレビュー</span>
-              </label>
-              <div class="card bg-base-100 shadow-sm p-4">
-                <div class="flex items-center space-x-4">
-                  <div class="avatar">
-                    <div class="w-16 rounded-full">
-                      <img
-                        id="preview-image"
-                        th:src="${assigneeForm.photoUrl != null && !assigneeForm.photoUrl.isEmpty()} ? ${assigneeForm.photoUrl} : '/images/avatars/default.svg'"
-                        alt="プレビュー"
-                        class="object-cover"
-                        onerror="this.src='/images/avatars/default.svg'"
-                      />
+              <!-- プレビュー -->
+              <div class="form-control mb-6">
+                <label class="label">
+                  <span class="label-text font-semibold">プレビュー</span>
+                </label>
+                <div class="card bg-base-100 shadow-sm p-4">
+                  <div class="flex items-center space-x-4">
+                    <div class="avatar">
+                      <div class="w-16 rounded-full">
+                        <img id="preview-image" th:src="${assigneeForm.photoUrl != null && !assigneeForm.photoUrl.isEmpty()} ? ${assigneeForm.photoUrl} : '/images/avatars/default.svg'" alt="プレビュー" class="object-cover" onerror="this.src='/images/avatars/default.svg'" />
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <div
-                      class="font-semibold"
-                      id="preview-name"
-                      th:text="${assigneeForm.name != null && !assigneeForm.name.isEmpty()} ? ${assigneeForm.name} : '担当者名'"
-                    >
-                      担当者名
+                    <div>
+                      <div class="font-semibold" id="preview-name" th:text="${assigneeForm.name != null && !assigneeForm.name.isEmpty()} ? ${assigneeForm.name} : '担当者名'">
+                        担当者名
+                      </div>
+                      <div class="text-sm text-base-content/70">担当者</div>
                     </div>
-                    <div class="text-sm text-base-content/70">担当者</div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- ボタン -->
-            <div class="card-actions justify-end">
-              <a th:href="@{/assignees}" class="btn btn-outline">キャンセル</a>
-              <button type="submit" class="btn btn-primary" id="submitBtn">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-                担当者を追加
-              </button>
-            </div>
-          </form>
+              <!-- ボタン -->
+              <div class="card-actions justify-end">
+                <a th:href="@{/assignees}" class="btn btn-outline">キャンセル</a>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  担当者を追加
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -540,11 +512,10 @@
           uploadMessage.innerHTML = `
           <div class="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24">
-              ${
-                type === "success"
-                  ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'
-                  : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />'
-              }
+              ${type === "success"
+              ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />'
+              : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />'
+            }
             </svg>
             <span>${message}</span>
           </div>
@@ -558,5 +529,6 @@
         }
       });
     </script>
-  </body>
+</body>
+
 </html>
