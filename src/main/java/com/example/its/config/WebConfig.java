@@ -19,8 +19,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .setCachePeriod(3600);
                 
         // アップロードファイル用の設定（外部ディレクトリ）
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + uploadDir + "/../")
+        registry.addResourceHandler("/uploads/avatars/**")
+                .addResourceLocations("file:" + uploadDir + "/")
                 .setCachePeriod(3600);
         
         registry.addResourceHandler("/css/**")
