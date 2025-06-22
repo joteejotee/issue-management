@@ -55,6 +55,9 @@ public class SecurityConfig {
                         .permitAll()
                         .logoutSuccessUrl("/login")
                 )
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/files/upload/**")
+                )
                 // レート制限フィルターを追加（一時的にコメントアウト - メイン機能優先）
                 // .addFilterBefore(loginRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

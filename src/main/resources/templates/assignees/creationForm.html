@@ -267,7 +267,7 @@
 
         // Uppyの初期化
         const uppy = new Uppy.Uppy({
-          autoProceed: false,
+          autoProceed: true,
           allowMultipleUploads: false,
           restrictions: {
             maxFileSize: 5 * 1024 * 1024, // 5MB
@@ -497,10 +497,20 @@
 
         // フォーム送信時のバリデーション
         document.getElementById("assigneeForm").addEventListener("submit", function (e) {
-          // 写真がアップロードされているかチェック
-          if (!photoUrlInput.value.trim()) {
+          // 写真がアップロードされているかチェック（より緩い条件）
+          const hasUploadedFile = photoUrlInput.value.trim() || uploadedFilePathInput.value.trim();
+          const hasSelectedFile = uppy.getFiles().length > 0;
+
+          if (!hasUploadedFile && !hasSelectedFile) {
             e.preventDefault();
             showMessage("error", "プロフィール写真をアップロードしてください。");
+            return false;
+          }
+
+          // アップロード中の場合は待機
+          if (hasSelectedFile && !hasUploadedFile) {
+            e.preventDefault();
+            showMessage("error", "ファイルのアップロードが完了するまでお待ちください。");
             return false;
           }
         });
